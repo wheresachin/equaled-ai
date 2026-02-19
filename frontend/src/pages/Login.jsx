@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import API_BASE from '../utils/api';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
@@ -9,6 +10,7 @@ import { Loader2 } from 'lucide-react';
 const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { showToast } = useToast();
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
   const [error, setError]       = useState('');
@@ -32,9 +34,11 @@ const Login = () => {
       });
       const data = await res.json();
       if (res.ok) {
-        login(data);
+        showToast(`Welcome back, ${data.name}! 👋`, 'success');
+        setTimeout(() => login(data), 800);
       } else {
         setError(data.message || 'Login failed');
+        showToast(data.message || 'Login failed', 'error');
       }
     } catch (err) {
       setError('Could not connect to server. Please try again.');

@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AccessibilityProvider } from './context/AccessibilityContext';
 import AuthProvider from './context/AuthContext';
 import { useAuth } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
 import VoiceAssistant from './components/VoiceAssistant'; // Add import
 import Layout from './components/Layout';
 import { useAccessibility } from './context/AccessibilityContext';
@@ -85,12 +86,13 @@ const VoiceAssistantActivator = () => {
 function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <AccessibilityProvider>
-          {/* Global activators — student only */}
-          <EyeTrackingActivator />
-          <HandTrackingActivator />
-          <VoiceAssistantActivator />
+      <ToastProvider>
+        <AuthProvider>
+          <AccessibilityProvider>
+            {/* Global activators — student only */}
+            <EyeTrackingActivator />
+            <HandTrackingActivator />
+            <VoiceAssistantActivator />
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
@@ -115,7 +117,8 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </AccessibilityProvider>
-      </AuthProvider>
+        </AuthProvider>
+      </ToastProvider>
     </BrowserRouter>
   );
 }

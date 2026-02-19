@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import API_BASE from '../utils/api';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { Loader2 } from 'lucide-react';
 
 const Signup = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
+  const { showToast } = useToast();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -21,6 +25,7 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     try {
       const payload = {
@@ -37,14 +42,18 @@ const Signup = () => {
       });
 
       const data = await res.json();
-
       if (res.ok) {
-        register(data);
+        showToast(`Account created! Welcome, ${data.name} 🎉`, 'success');
+        setTimeout(() => register(data), 1000);
       } else {
         setError(data.message || 'Registration failed');
+        showToast(data.message || 'Registration failed', 'error');
       }
     } catch (err) {
       setError('An error occurred during registration');
+      showToast('Could not connect to server. Try again.', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -123,11 +132,12 @@ const Signup = () => {
               </div>
             )}
             
-            <button 
-              type="submit" 
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:shadow-xl high-contrast:bg-yellow-400 high-contrast:text-black"
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 disabled:opacity-70 high-contrast:bg-yellow-400 high-contrast:text-black"
             >
-              Sign Up
+              {loading ? <><Loader2 size={20} className="animate-spin" /> Creating Account...</> : 'Sign Up'}
             </button>
           </form>
           
