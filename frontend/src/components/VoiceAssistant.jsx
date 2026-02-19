@@ -63,6 +63,15 @@ const VoiceAssistant = () => {
   const [showLangMenu, setShowLangMenu] = useState(false);
   const [showHelp, setShowHelp]     = useState(false);
 
+  // ── Drag Logic State ──────────────────────────────────────────────
+  const [position, setPosition] = useState(() => {
+    const saved = localStorage.getItem('voice_assistant_pos');
+    return saved ? JSON.parse(saved) : { x: window.innerWidth * 0.23, y: window.innerHeight - 80 };
+  });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart]   = useState({ x: 0, y: 0 });
+  const [moved, setMoved]           = useState(false);
+
   // Clear transcript after 5s
   useEffect(() => {
     if (!transcript) return;
@@ -98,6 +107,49 @@ const VoiceAssistant = () => {
     window.addEventListener('equaled:voice-disable', handler);
     return () => window.removeEventListener('equaled:voice-disable', handler);
   }, [voiceEnabled, toggleVoice]);
+
+  // ── Pointer Drag Handlers ─────────────────────────────────────────
+  const onPointerDown = (e) => {
+    setIsDragging(true);
+    setMoved(false);
+    setDragStart({
+      x: e.clientX - position.x,
+      y: e.clientY - position.y
+    });
+    // Capture pointer to continue receiving events even if moved outside element
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+
+  const onPointerMove = (e) => {
+    if (!isDragging) return;
+    
+    const newX = e.clientX - dragStart.x;
+    const newY = e.clientY - dragStart.y;
+
+    // Movement threshold to differentiate click vs drag
+    if (Math.abs(newX - position.x) > 5 || Math.abs(newY - position.y) > 5) {
+      setMoved(true);
+    }
+
+    // Boundary checks
+    const boundedX = Math.max(32, Math.min(window.innerWidth - 32, newX));
+    const boundedY = Math.max(32, Math.min(window.innerHeight - 32, newY));
+
+    setPosition({ x: boundedX, y: boundedY });
+  };
+
+  const onPointerUp = (e) => {
+    setIsDragging(false);
+    e.currentTarget.releasePointerCapture(e.pointerId);
+    localStorage.setItem('voice_assistant_pos', JSON.stringify(position));
+  };
+
+  const handleToggle = (e) => {
+    // Only toggle if we didn't move significantly (it's a click, not a drag)
+    if (!moved) {
+      toggleVoice(e);
+    }
+  };
 
   const { supported, permDenied } = useVoiceControl({
     enabled:      voiceEnabled,
@@ -157,8 +209,19 @@ const VoiceAssistant = () => {
         </div>
       )}
 
-      {/* Mic button group - Slightly left of center */}
-      <div className="fixed bottom-6 left-[23%] -translate-x-1/2 z-[999998] flex flex-col items-center gap-2 transition-all duration-300">
+      {/* Mic button group - Draggable Container */}
+      <div 
+        className={`fixed z-[999998] flex flex-col items-center gap-2 transition-transform duration-75 ${isDragging ? 'scale-105 opacity-90 cursor-grabbing' : 'cursor-grab'}`}
+        style={{ 
+          left: position.x, 
+          top: position.y,
+          transform: 'translate(-50%, -50%)',
+          touchAction: 'none' // Prevent scrolling while dragging
+        }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+      >
         
         {/* Language Switcher Overlay */}
         {showLangMenu && (
@@ -166,7 +229,8 @@ const VoiceAssistant = () => {
             {langs.map(l => (
               <button
                 key={l.code}
-                onClick={() => { setVoiceLang(l.code); setShowLangMenu(false); }}
+                onClick={(e) => { e.stopPropagation(); setVoiceLang(l.code); setShowLangMenu(false); }}
+                onPointerDown={(e) => e.stopPropagation()} // Prevent drag start when clicking menu
                 className={`text-left px-3 py-2 rounded-xl text-xs font-bold transition-all ${
                   voiceLang === l.code ? 'bg-indigo-600 text-white' : 'hover:bg-gray-100 text-gray-600'
                 }`}
@@ -181,13 +245,15 @@ const VoiceAssistant = () => {
         {!isAwake && !listening && (
           <div className="flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2">
             <button
-              onClick={() => setShowHelp(true)}
+              onClick={(e) => { e.stopPropagation(); setShowHelp(true); }}
+              onPointerDown={(e) => e.stopPropagation()}
               className="w-8 h-8 rounded-full bg-white/90 border border-gray-200 text-gray-600 shadow-sm hover:bg-gray-50 flex items-center justify-center transition-colors"
             >
               <HelpCircle size={16} />
             </button>
             <button
-              onClick={() => setShowLangMenu(m => !m)}
+              onClick={(e) => { e.stopPropagation(); setShowLangMenu(m => !m); }}
+              onPointerDown={(e) => e.stopPropagation()}
               className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/90 border border-gray-200 text-gray-600 text-[10px] font-bold shadow-sm hover:bg-gray-50 transition-colors"
             >
               <Globe size={14} />
@@ -198,7 +264,8 @@ const VoiceAssistant = () => {
 
         {/* Main Mic Button */}
         <button
-          onClick={toggleVoice}
+          onClick={handleToggle}
+          onPointerDown={(e) => e.stopPropagation()} // Let the container handle drag, but don't prevent button click logic
           disabled={permDenied}
           className={`
             relative w-16 h-16 rounded-full flex items-center justify-center
