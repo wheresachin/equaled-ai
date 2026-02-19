@@ -1,0 +1,20 @@
+function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <AccessibilityProvider>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Landing />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="lesson/:id" element={<Lesson />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Route>
+          </Routes>
+        </AccessibilityProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  );
+}
+
+export default App;

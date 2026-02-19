@@ -4,13 +4,17 @@ import { useAccessibility } from '../context/AccessibilityContext';
 import { useTextToSpeech } from './useTextToSpeech';
 
 export const useVoiceCommands = () => {
-  const { transcript, resetTranscript } = useSpeechToText();
+  const { transcript, resetTranscript, startListening } = useSpeechToText();
   const { 
     increaseFont, decreaseFont, 
     toggleContrast, toggleFocusMode, 
     toggleCaptions 
   } = useAccessibility();
   const { speak, stop } = useTextToSpeech();
+
+  useEffect(() => {
+    startListening();
+  }, []);
 
   useEffect(() => {
     if (!transcript) return;
