@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AccessibilityProvider } from './context/AccessibilityContext';
 import AuthProvider from './context/AuthContext';
 import { useAuth } from './context/AuthContext';
+import VoiceAssistant from './components/VoiceAssistant'; // Add import
 import Layout from './components/Layout';
 import { useAccessibility } from './context/AccessibilityContext';
 import { useEyeTracking } from './hooks/useEyeTracking';
@@ -45,6 +46,8 @@ const EyeTrackingActivator = () => {
   return null;
 };
 
+
+
 // Hand tracking activator — student only
 const HandTrackingActivator = () => {
   const { handTrackingEnabled, toggleHandTracking, setHandTrackingStatus } = useAccessibility();
@@ -68,6 +71,14 @@ const HandTrackingActivator = () => {
   return null;
 };
 
+// Voice Assistant Activator — student only
+const VoiceAssistantActivator = () => {
+  const { user } = useAuth();
+  if (user?.role !== 'student') return null;
+  return <VoiceAssistant />;
+};
+
+
 function App() {
   return (
     <BrowserRouter>
@@ -76,6 +87,7 @@ function App() {
           {/* Global activators — student only */}
           <EyeTrackingActivator />
           <HandTrackingActivator />
+          <VoiceAssistantActivator />
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />

@@ -12,6 +12,9 @@ export const AccessibilityProvider = ({ children }) => {
   const [eyeTrackingStatus, setEyeTrackingStatus] = useState('idle');
   const [handTrackingEnabled, setHandTrackingEnabled] = useState(false);
   const [handTrackingStatus, setHandTrackingStatus] = useState('idle');
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [voiceLang, setVoiceLang] = useState('hi-IN'); // Smart default: handles Hindi & English
+  const [isAwake, setIsAwake] = useState(false); // Passive listening by default
 
   // Apply disability defaults when type changes
   useEffect(() => {
@@ -68,6 +71,7 @@ export const AccessibilityProvider = ({ children }) => {
   const toggleCaptions = () => setCaptionsEnabled((prev) => !prev);
   const toggleEyeTracking = () => setEyeTrackingEnabled((prev) => !prev);
   const toggleHandTracking = () => setHandTrackingEnabled((prev) => !prev);
+  const toggleVoice = () => setVoiceEnabled((prev) => !prev);
 
   return (
     <AccessibilityContext.Provider
@@ -90,7 +94,14 @@ export const AccessibilityProvider = ({ children }) => {
         handTrackingEnabled,
         toggleHandTracking,
         handTrackingStatus,
+
         setHandTrackingStatus,
+        voiceEnabled,
+        toggleVoice,
+        voiceLang,
+        setVoiceLang,
+        isAwake,
+        setIsAwake,
       }}
     >
       {children}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAccessibility } from '../context/AccessibilityContext';
-import { Type, Moon, Eye, Hand, Ear, Activity, Brain, Loader } from 'lucide-react';
+import { Type, Moon, Eye, Hand, Ear, Activity, Brain, Loader, Mic } from 'lucide-react';
 
 const statusClass = (s, activeColor) =>
   s === 'active'  ? `${activeColor} border` :
@@ -17,6 +17,7 @@ const AccessibilityControls = () => {
     captionsEnabled, toggleCaptions,
     eyeTrackingEnabled, toggleEyeTracking, eyeTrackingStatus,
     handTrackingEnabled, toggleHandTracking, handTrackingStatus,
+    voiceEnabled, toggleVoice, // Added voice controls
   } = useAccessibility();
 
   return (
@@ -157,6 +158,24 @@ const AccessibilityControls = () => {
           )}
           {handTrackingStatus === 'error' && (
             <p className="text-xs text-orange-600 px-1">Camera denied. Check browser settings.</p>
+          )}
+
+          {/* ── Voice Control ─────────────────────────────────── */}
+          <button
+            onClick={toggleVoice}
+            className={`w-full flex items-center justify-between p-2 rounded-lg text-sm transition-colors ${
+              voiceEnabled ? 'bg-purple-100 text-purple-700 border border-purple-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+            }`}
+          >
+            <span>
+              {voiceEnabled ? 'Voice Control ON' : 'Voice Control'}
+            </span>
+            <Mic size={16} className={voiceEnabled ? 'animate-pulse' : ''} />
+          </button>
+          {voiceEnabled && (
+            <p className="text-xs text-purple-600 px-1">
+              Say "Go to home", "Increase font"...
+            </p>
           )}
         </div>
       </div>
