@@ -12,7 +12,7 @@ export const AccessibilityProvider = ({ children }) => {
   const [eyeTrackingStatus, setEyeTrackingStatus] = useState('idle');
   const [handTrackingEnabled, setHandTrackingEnabled] = useState(false);
   const [handTrackingStatus, setHandTrackingStatus] = useState('idle');
-  const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [voiceEnabled, setVoiceEnabled] = useState(false);
   const [voiceLang, setVoiceLang] = useState('hi-IN'); // Smart default: handles Hindi & English
   const [isAwake, setIsAwake] = useState(false); // Passive listening by default
 

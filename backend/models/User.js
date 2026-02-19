@@ -7,6 +7,8 @@ const userSchema = mongoose.Schema({
     password: { type: String, required: true },
     role: { type: String, enum: ['student', 'teacher', 'admin'], default: 'student' },
     disabilityType: { type: String, enum: ['visual', 'hearing', 'motor', 'cognitive', 'none'], default: 'none' },
+    resetPasswordToken:   { type: String },
+    resetPasswordExpires: { type: Date },
 }, { timestamps: true });
 
 userSchema.methods.matchPassword = async function(enteredPassword) {

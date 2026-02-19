@@ -24,6 +24,63 @@ const loadScript = (src, id) =>
     document.head.appendChild(s);
   });
 
+// ── Flash scroll zone indicator ──────────────────────────────────
+const flashScrollZone = (dir) => {
+  const id = `gaze-scroll-${dir}`;
+  let el = document.getElementById(id);
+  if (!el) {
+    el = document.createElement('div');
+    el.id = id;
+    Object.assign(el.style, {
+      position: 'fixed',
+      left: '50%', transform: 'translateX(-50%)',
+      [dir === 'up' ? 'top' : 'bottom']: '0',
+      width: '120px', height: '44px',
+      background: 'rgba(99,102,241,0.85)',
+      color: '#fff', fontWeight: '700', fontSize: '20px',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      borderRadius: dir === 'up' ? '0 0 24px 24px' : '24px 24px 0 0',
+      pointerEvents: 'none', zIndex: '9999999',
+      transition: 'opacity 0.2s',
+      opacity: '0',
+    });
+    el.textContent = dir === 'up' ? '▲ UP' : '▼ DOWN';
+    document.body.appendChild(el);
+  }
+  el.style.opacity = '1';
+  setTimeout(() => { el.style.opacity = '0'; }, 400);
+};
+
+// ── Persistent scroll zone hints (always visible when eye tracker is on) ──
+const showScrollHints = () => {
+  ['up','down'].forEach(dir => {
+    const id = `gaze-hint-${dir}`;
+    if (document.getElementById(id)) return;
+    const el = document.createElement('div');
+    el.id = id;
+    Object.assign(el.style, {
+      position: 'fixed',
+      left: '50%', transform: 'translateX(-50%)',
+      [dir === 'up' ? 'top' : 'bottom']: '0',
+      width: '100px', height: '32px',
+      background: 'rgba(99,102,241,0.18)',
+      border: '1.5px solid rgba(99,102,241,0.4)',
+      color: 'rgba(99,102,241,0.7)', fontWeight: '700', fontSize: '13px',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      borderRadius: dir === 'up' ? '0 0 16px 16px' : '16px 16px 0 0',
+      pointerEvents: 'none', zIndex: '9999998',
+      letterSpacing: '1px',
+    });
+    el.textContent = dir === 'up' ? '▲ Scroll Up' : '▼ Scroll Down';
+    document.body.appendChild(el);
+  });
+};
+
+const removeScrollHints = () => {
+  ['gaze-hint-up','gaze-hint-down','gaze-scroll-up','gaze-scroll-down']
+    .forEach(id => document.getElementById(id)?.remove());
+};
+
 export const useEyeTracking = (enabled) => {
   const [status, setStatus]   = useState('idle');
   const cameraRef  = useRef(null);
@@ -32,6 +89,7 @@ export const useEyeTracking = (enabled) => {
   const canvasRef  = useRef(null);
   const gazeHist   = useRef([]);
   const scrollCD   = useRef(false);
+  const dwellRef   = useRef({ x: 0, y: 0, startTime: 0, active: false });
 
   const smoothGaze = (x, y) => {
     gazeHist.current.push({ x, y });
@@ -197,17 +255,58 @@ export const useEyeTracking = (enabled) => {
     cursor.style.left = `${x}px`;
     cursor.style.top  = `${y}px`;
 
+    // ── Dwell click (stay 2s on same spot → click) ────────────────────────────
+    const DWELL_MS   = 2000;
+    const DWELL_RADIUS = 60;
+    const dwell = dwellRef.current;
+    const dist = Math.hypot(x - dwell.x, y - dwell.y);
+
+    if (dist > DWELL_RADIUS) {
+      // Gaze moved — reset dwell
+      dwell.x = x; dwell.y = y;
+      dwell.startTime = performance.now();
+      dwell.active = false;
+      cursor.style.background = 'rgba(239,68,68,0.2)';
+      cursor.style.border = '3px solid rgba(239,68,68,0.9)';
+      cursor.style.boxShadow = '0 0 20px rgba(239,68,68,0.5)';
+    } else if (!dwell.active) {
+      // Gaze is stable — show fill progress
+      const elapsed = performance.now() - dwell.startTime;
+      const pct = Math.min(elapsed / DWELL_MS, 1);
+      const deg = Math.round(pct * 360);
+      cursor.style.background = `conic-gradient(rgba(99,102,241,0.7) ${deg}deg, rgba(239,68,68,0.15) ${deg}deg)`;
+      cursor.style.border = '3px solid rgba(99,102,241,0.9)';
+      cursor.style.boxShadow = '0 0 24px rgba(99,102,241,0.6)';
+
+      if (elapsed >= DWELL_MS) {
+        // Fire click!
+        dwell.active = true;
+        cursor.style.background = 'rgba(99,102,241,0.6)';
+        const el = document.elementFromPoint(x, y);
+        if (el && el.id !== 'gaze-cursor') el.click();
+        // Reset after 800ms so next dwell can happen
+        setTimeout(() => {
+          dwell.x = -999; dwell.y = -999;
+          dwell.startTime = performance.now();
+          dwell.active = false;
+        }, 800);
+      }
+    }
+
     // ── Edge scroll ──────────────────────────────────────────────
+    const scrollEl = document.querySelector('main') || document.documentElement;
     if (!scrollCD.current) {
       const vh = window.innerHeight;
-      if (y < vh * 0.1) {
-        window.scrollBy({ top: -100, behavior: 'smooth' });
+      if (y < vh * 0.15) {
+        scrollEl.scrollBy({ top: -180, behavior: 'smooth' });
         scrollCD.current = true;
-        setTimeout(() => { scrollCD.current = false; }, 500);
-      } else if (y > vh * 0.9) {
-        window.scrollBy({ top: 100, behavior: 'smooth' });
+        setTimeout(() => { scrollCD.current = false; }, 300);
+        flashScrollZone('up');
+      } else if (y > vh * 0.85) {
+        scrollEl.scrollBy({ top: 180, behavior: 'smooth' });
         scrollCD.current = true;
-        setTimeout(() => { scrollCD.current = false; }, 500);
+        setTimeout(() => { scrollCD.current = false; }, 300);
+        flashScrollZone('down');
       }
     }
   };
@@ -253,6 +352,7 @@ export const useEyeTracking = (enabled) => {
     cameraRef.current = camera;
     camera.start();
 
+    showScrollHints();
     setStatus('active');
     console.log('[EyeTracking] FaceMesh started with iris tracking.');
   };
@@ -269,6 +369,7 @@ export const useEyeTracking = (enabled) => {
     ['eye-cam-container', 'gaze-cursor'].forEach(id =>
       document.getElementById(id)?.remove()
     );
+    removeScrollHints();
     gazeHist.current = [];
     scrollCD.current = false;
     setStatus('idle');

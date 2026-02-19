@@ -24,6 +24,7 @@ import SubmissionReview from './pages/SubmissionReview';
 import ManageStudents from './pages/ManageStudents';
 import TalkToAI from './pages/TalkToAI';
 import Home from './pages/Home';
+import ForgotPassword from './pages/ForgotPassword';
 
 // Eye tracking activator — student only
 const EyeTrackingActivator = () => {
@@ -94,6 +95,7 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
             <Route path="/manage-lessons" element={<ManageLessons />} />
