@@ -1,12 +1,5 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
-const SYSTEM_INSTRUCTION =
-  'You are an inclusive educational assistant. ' +
-  'Explain clearly and simply for students with disabilities. ' +
-  'Keep answers concise (2-4 sentences). Be warm and encouraging.';
-
 // POST /api/ai/chat
 const chatWithAI = async (req, res) => {
   try {
@@ -20,20 +13,25 @@ const chatWithAI = async (req, res) => {
       return res.status(400).json({ message: 'Message is required.' });
     }
 
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-1.5-flash',
-      systemInstruction: SYSTEM_INSTRUCTION,
-    });
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({ message: 'AI service not configured.' });
+    }
 
-    const result = await model.generateContent(message.trim());
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+
+    // Embed system instruction inside the prompt for maximum compatibility
+    const prompt = `You are an inclusive educational assistant for students with disabilities. Explain clearly and simply. Keep answers to 2-4 sentences. Be warm and encouraging.\n\nStudent asks: ${message.trim()}`;
+
+    const result = await model.generateContent(prompt);
     const reply = result.response.text();
 
     res.json({ reply });
   } catch (error) {
-    console.error('[AI] Gemini error:', error);
+    console.error('[AI] Gemini error:', error?.message || error);
     res.status(500).json({
       message: 'AI is not available right now. Please try again.',
-      reply: 'Sorry, I could not process your request. Please try again.',
+      error: error?.message,
     });
   }
 };
