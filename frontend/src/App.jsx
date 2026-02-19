@@ -2,7 +2,11 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AccessibilityProvider } from './context/AccessibilityContext';
 import AuthProvider from './context/AuthContext';
+import { useAuth } from './context/AuthContext';
 import Layout from './components/Layout';
+import { useAccessibility } from './context/AccessibilityContext';
+import { useEyeTracking } from './hooks/useEyeTracking';
+import { useHandTracking } from './hooks/useHandTracking';
 
 import Landing from './pages/Landing';
 import Dashboard from './pages/Dashboard';
@@ -18,11 +22,60 @@ import StudentProgress from './pages/StudentProgress';
 import SubmissionReview from './pages/SubmissionReview';
 import ManageStudents from './pages/ManageStudents';
 
+// Eye tracking activator — student only
+const EyeTrackingActivator = () => {
+  const { eyeTrackingEnabled, toggleEyeTracking, setEyeTrackingStatus } = useAccessibility();
+  const { user } = useAuth();
+  const isStudent = user?.role === 'student';
+  const { status } = useEyeTracking(eyeTrackingEnabled && isStudent);
+
+  React.useEffect(() => {
+    setEyeTrackingStatus(isStudent ? status : 'idle');
+  }, [status, setEyeTrackingStatus, isStudent]);
+
+  // Close button in the camera preview dispatches this event
+  React.useEffect(() => {
+    const handler = () => {
+      if (eyeTrackingEnabled) toggleEyeTracking();
+    };
+    window.addEventListener('equaled:eye-close', handler);
+    return () => window.removeEventListener('equaled:eye-close', handler);
+  }, [eyeTrackingEnabled, toggleEyeTracking]);
+
+  return null;
+};
+
+// Hand tracking activator — student only
+const HandTrackingActivator = () => {
+  const { handTrackingEnabled, toggleHandTracking, setHandTrackingStatus } = useAccessibility();
+  const { user } = useAuth();
+  const isStudent = user?.role === 'student';
+  const { status } = useHandTracking(handTrackingEnabled && isStudent);
+
+  React.useEffect(() => {
+    setHandTrackingStatus(isStudent ? status : 'idle');
+  }, [status, setHandTrackingStatus, isStudent]);
+
+  // Close button in the camera preview dispatches this event
+  React.useEffect(() => {
+    const handler = () => {
+      if (handTrackingEnabled) toggleHandTracking();
+    };
+    window.addEventListener('equaled:hand-close', handler);
+    return () => window.removeEventListener('equaled:hand-close', handler);
+  }, [handTrackingEnabled, toggleHandTracking]);
+
+  return null;
+};
+
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <AccessibilityProvider>
+          {/* Global activators — student only */}
+          <EyeTrackingActivator />
+          <HandTrackingActivator />
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />

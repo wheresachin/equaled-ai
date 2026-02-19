@@ -14,6 +14,7 @@ const emptyQuestion = () => ({
 
 const CreateQuiz = () => {
   const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [lessonId, setLessonId] = useState('');
   const [lessons, setLessons] = useState([]);
@@ -21,7 +22,6 @@ const CreateQuiz = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Fetch lessons to associate quiz with
   useEffect(() => {
     const fetchLessons = async () => {
       try {
@@ -95,23 +95,21 @@ const CreateQuiz = () => {
 
   return (
     <div className="flex bg-gray-50 min-h-screen high-contrast:bg-black">
-      <div className="fixed h-full z-10">
-        <Sidebar />
-      </div>
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
-      <div className="flex-1 ml-64 flex flex-col min-h-screen">
-        <DashboardNavbar />
-        <main className="flex-1 pt-24 px-8 pb-8 overflow-y-auto">
+      <div className="flex-1 md:ml-64 flex flex-col min-h-screen">
+        <DashboardNavbar onMenuClick={() => setSidebarOpen(true)} />
+        <main className="flex-1 pt-16 md:pt-20 px-4 sm:px-6 lg:px-8 pb-8 overflow-y-auto">
              <button 
                 onClick={() => navigate('/manage-lessons')}
-                className="flex items-center gap-2 text-gray-500 hover:text-blue-600 mb-6 transition-colors high-contrast:text-gray-400 high-contrast:hover:text-yellow-400"
+                className="flex items-center gap-2 text-gray-500 hover:text-blue-600 mb-6 mt-6 transition-colors high-contrast:text-gray-400 high-contrast:hover:text-yellow-400"
             >
                 <ArrowLeft size={20} /> Back to Lessons
             </button>
 
             <div className="max-w-4xl mx-auto">
                 <header className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 high-contrast:text-yellow-400">Create Quiz</h1>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 high-contrast:text-yellow-400">Create Quiz</h1>
                     <p className="text-gray-500 high-contrast:text-gray-300">Add assessment questions to your lesson.</p>
                 </header>
 
@@ -121,7 +119,7 @@ const CreateQuiz = () => {
 
                 <form onSubmit={handleSubmit} className="space-y-8">
                     {/* Quiz header */}
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 high-contrast:bg-gray-900 high-contrast:border-gray-800 space-y-4">
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 high-contrast:bg-gray-900 high-contrast:border-gray-800 space-y-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2 high-contrast:text-white">Quiz Title</label>
                             <input
@@ -152,7 +150,7 @@ const CreateQuiz = () => {
                     </div>
 
                     {questions.map((q, qIndex) => (
-                        <div key={qIndex} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 high-contrast:bg-gray-900 high-contrast:border-gray-800">
+                        <div key={qIndex} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 high-contrast:bg-gray-900 high-contrast:border-gray-800">
                             <div className="flex justify-between items-start mb-6">
                                 <h3 className="text-lg font-bold text-gray-900 high-contrast:text-white">Question {qIndex + 1}</h3>
                                 <button type="button" onClick={() => removeQuestion(qIndex)} className="text-red-500 hover:text-red-700 high-contrast:text-red-400">
@@ -175,7 +173,7 @@ const CreateQuiz = () => {
                             <div className="space-y-4 mb-6">
                                 <label className="block text-sm font-medium text-gray-700 high-contrast:text-white">Options <span className="text-gray-400 font-normal">(select the correct answer)</span></label>
                                 {q.options.map((opt, oIndex) => (
-                                    <div key={oIndex} className="flex gap-4 items-center">
+                                    <div key={oIndex} className="flex gap-3 items-center">
                                         <input 
                                             type="text"
                                             required
@@ -189,7 +187,7 @@ const CreateQuiz = () => {
                                             name={`correct-${qIndex}`}
                                             checked={q.correctAnswer === opt && opt !== ''}
                                             onChange={() => updateQuestion(qIndex, 'correctAnswer', opt)}
-                                            className="w-6 h-6 text-blue-600 focus:ring-blue-500"
+                                            className="w-5 h-5 text-blue-600 focus:ring-blue-500 flex-shrink-0"
                                             title="Mark as correct answer"
                                         />
                                     </div>
@@ -210,21 +208,19 @@ const CreateQuiz = () => {
                         </div>
                     ))}
 
-                    <div className="flex gap-4">
-                        <button 
-                            type="button" 
-                            onClick={addQuestion}
-                            className="flex-1 py-4 border-2 border-dashed border-gray-300 rounded-2xl text-gray-500 font-bold hover:border-blue-500 hover:text-blue-600 transition-colors flex items-center justify-center gap-2 high-contrast:border-gray-700 high-contrast:text-gray-400 high-contrast:hover:border-yellow-400 high-contrast:hover:text-yellow-400"
-                        >
-                            <Plus size={24} /> Add Question
-                        </button>
-                    </div>
+                    <button 
+                        type="button" 
+                        onClick={addQuestion}
+                        className="w-full py-4 border-2 border-dashed border-gray-300 rounded-2xl text-gray-500 font-bold hover:border-blue-500 hover:text-blue-600 transition-colors flex items-center justify-center gap-2 high-contrast:border-gray-700 high-contrast:text-gray-400 high-contrast:hover:border-yellow-400 high-contrast:hover:text-yellow-400"
+                    >
+                        <Plus size={24} /> Add Question
+                    </button>
 
-                    <div className="flex justify-end pt-8">
+                    <div className="flex justify-end pt-4">
                          <button 
                             type="submit"
                             disabled={loading || lessons.length === 0}
-                            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold transition-all shadow-lg high-contrast:bg-yellow-400 high-contrast:text-black disabled:opacity-50"
+                            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 py-4 rounded-xl font-bold transition-all shadow-lg high-contrast:bg-yellow-400 high-contrast:text-black disabled:opacity-50"
                         >
                             <Save size={20} /> {loading ? 'Saving...' : 'Save Quiz'}
                         </button>

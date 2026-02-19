@@ -9,16 +9,17 @@ const DashboardNavbar = ({ onMenuClick }) => {
   } = useAccessibility();
 
   return (
-    <nav className="fixed w-full bg-white border-b border-gray-100 z-50 px-4 sm:px-6 lg:px-8 h-20 flex justify-between items-center high-contrast:bg-black high-contrast:border-yellow-400">
+    <nav className="fixed top-0 left-0 right-0 bg-white border-b border-gray-100 z-40 px-4 sm:px-6 lg:px-8 h-16 md:h-20 flex justify-between items-center high-contrast:bg-black high-contrast:border-yellow-400">
         <div className="flex items-center gap-4">
-             {/* Mobile Menu Trigger (if needed) */}
+            {/* Mobile Hamburger */}
             <button 
                 onClick={onMenuClick}
-                className="md:hidden text-gray-500 hover:text-blue-600 high-contrast:text-yellow-400"
+                className="md:hidden text-gray-500 hover:text-blue-600 high-contrast:text-yellow-400 p-1"
+                aria-label="Open menu"
             >
                 <Menu size={24} />
             </button>
-            <h1 className="text-xl font-bold text-gray-800 hidden md:block high-contrast:text-yellow-400">EqualEd Dashboard</h1>
+            <h1 className="text-lg sm:text-xl font-bold text-gray-800 high-contrast:text-yellow-400">EqualEd Dashboard</h1>
         </div>
 
         <div className="flex items-center gap-4">

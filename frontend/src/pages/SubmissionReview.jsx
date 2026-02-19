@@ -5,6 +5,7 @@ import { MessageSquare, Check, X } from 'lucide-react';
 import API_BASE from '../utils/api';
 
 const SubmissionReview = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -52,15 +53,13 @@ const SubmissionReview = () => {
 
   return (
     <div className="flex bg-gray-50 min-h-screen high-contrast:bg-black">
-      <div className="fixed h-full z-10">
-        <Sidebar />
-      </div>
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
-      <div className="flex-1 ml-64 flex flex-col min-h-screen">
-        <DashboardNavbar />
-        <main className="flex-1 pt-24 px-8 pb-8 overflow-y-auto">
-            <header className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 high-contrast:text-yellow-400">Review Submissions</h1>
+      <div className="flex-1 md:ml-64 flex flex-col min-h-screen">
+        <DashboardNavbar onMenuClick={() => setSidebarOpen(true)} />
+        <main className="flex-1 pt-16 md:pt-20 px-4 sm:px-6 lg:px-8 pb-8 overflow-y-auto">
+            <header className="mb-6 mt-6">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 high-contrast:text-yellow-400">Review Submissions</h1>
                 <p className="text-gray-500 high-contrast:text-gray-300">Provide feedback on student answers.</p>
             </header>
 
@@ -118,7 +117,7 @@ const SubmissionReview = () => {
                   ))}
 
                   {submissions.length === 0 && (
-                       <div className="col-span-3 text-center py-20">
+                       <div className="col-span-full text-center py-20">
                            <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4 high-contrast:bg-green-900 high-contrast:text-green-300">
                                <Check size={32} />
                            </div>

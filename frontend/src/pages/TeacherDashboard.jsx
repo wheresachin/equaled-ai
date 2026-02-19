@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import DashboardNavbar from '../components/DashboardNavbar';
 import Sidebar from '../components/Sidebar';
-import { Users, BookOpen, ClipboardList, Activity, UserPlus, Plus } from 'lucide-react';
+import { Users, BookOpen, ClipboardList, Activity, UserPlus } from 'lucide-react';
 import API_BASE from '../utils/api';
 
 const TeacherDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [loading, setLoading]   = useState(true);
   const [students, setStudents] = useState([]);
@@ -49,52 +50,45 @@ const TeacherDashboard = () => {
     { icon: Activity,      title: 'Pending Reviews',   value: loading ? '...' : '—',             color: 'green'  },
   ];
 
-  // Today's tasks (assigned today)
-  const today = new Date().toDateString();
-  const recentTasks = tasks.filter((t) => {
-    const created = new Date(t.createdAt).toDateString();
-    return true; // show all latest, sorted
-  }).slice(0, 5);
+  const recentTasks = tasks.slice(0, 5);
 
   return (
     <div className="flex bg-gray-50 min-h-screen high-contrast:bg-black">
-      <div className="fixed h-full z-10">
-        <Sidebar />
-      </div>
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <div className="flex-1 ml-64 flex flex-col min-h-screen">
-        <DashboardNavbar />
-        <main className="flex-1 pt-24 px-8 pb-8 overflow-y-auto">
+      <div className="flex-1 md:ml-64 flex flex-col min-h-screen">
+        <DashboardNavbar onMenuClick={() => setSidebarOpen(true)} />
+        <main className="flex-1 pt-16 md:pt-20 px-4 sm:px-6 lg:px-8 pb-8 overflow-y-auto">
 
           {/* Header */}
-          <header className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 high-contrast:text-yellow-400">
+          <header className="mb-6 mt-6">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 high-contrast:text-yellow-400">
               Welcome back, {user?.name || 'Teacher'} 👋
             </h1>
             <p className="text-gray-500 high-contrast:text-gray-300">Here's what's happening in your classroom today.</p>
           </header>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
             {stats.map((stat, index) => (
-              <div key={index} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 high-contrast:bg-gray-900 high-contrast:border-gray-800">
-                <div className={`p-3 rounded-xl w-fit mb-4 ${
+              <div key={index} className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 high-contrast:bg-gray-900 high-contrast:border-gray-800">
+                <div className={`p-3 rounded-xl w-fit mb-3 sm:mb-4 ${
                   stat.color === 'blue'   ? 'bg-blue-100 text-blue-600'     :
                   stat.color === 'purple' ? 'bg-purple-100 text-purple-600' :
                   stat.color === 'orange' ? 'bg-orange-100 text-orange-600' :
                   'bg-green-100 text-green-600'
                 } high-contrast:bg-yellow-400 high-contrast:text-black`}>
-                  <stat.icon size={24} />
+                  <stat.icon size={22} />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 high-contrast:text-white">{stat.value}</h3>
-                <p className="text-gray-500 font-medium high-contrast:text-gray-400">{stat.title}</p>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 high-contrast:text-white">{stat.value}</h3>
+                <p className="text-gray-500 font-medium text-sm high-contrast:text-gray-400">{stat.title}</p>
               </div>
             ))}
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
 
-            {/* My Students (real data) */}
+            {/* My Students */}
             <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6 high-contrast:bg-gray-900 high-contrast:border-gray-800">
               <div className="flex justify-between items-center mb-5">
                 <h2 className="text-xl font-bold text-gray-900 high-contrast:text-white">My Students</h2>

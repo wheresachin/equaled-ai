@@ -1,6 +1,12 @@
 import React from 'react';
 import { useAccessibility } from '../context/AccessibilityContext';
-import { Type, Moon, Eye, Ear, Activity, Brain } from 'lucide-react';
+import { Type, Moon, Eye, Hand, Ear, Activity, Brain, Loader } from 'lucide-react';
+
+const statusClass = (s, activeColor) =>
+  s === 'active'  ? `${activeColor} border` :
+  s === 'loading' ? 'bg-yellow-100 text-yellow-700 border border-yellow-300' :
+  s === 'error'   ? 'bg-orange-100 text-orange-700 border border-orange-300' :
+  'bg-gray-100 hover:bg-gray-200 text-gray-700';
 
 const AccessibilityControls = () => {
   const {
@@ -9,7 +15,8 @@ const AccessibilityControls = () => {
     fontSize, increaseFont, decreaseFont,
     focusMode, toggleFocusMode,
     captionsEnabled, toggleCaptions,
-    eyeTrackingEnabled, toggleEyeTracking
+    eyeTrackingEnabled, toggleEyeTracking, eyeTrackingStatus,
+    handTrackingEnabled, toggleHandTracking, handTrackingStatus,
   } = useAccessibility();
 
   return (
@@ -25,28 +32,28 @@ const AccessibilityControls = () => {
         
         {/* Mode Selection */}
         <div className="space-y-2">
-            <h3 className="text-xs font-bold text-gray-500 uppercase high-contrast:text-yellow-400">Assistive Mode</h3>
-            <div className="grid grid-cols-2 gap-2">
-                {[
-                    { id: 'visual', icon: Eye, label: 'Visual' },
-                    { id: 'hearing', icon: Ear, label: 'Hearing' },
-                    { id: 'motor', icon: Activity, label: 'Motor' },
-                    { id: 'cognitive', icon: Brain, label: 'Cognitive' }
-                ].map(({ id, icon: Icon, label }) => (
-                    <button
-                        key={id}
-                        onClick={() => setDisabilityType(disabilityType === id ? 'none' : id)}
-                        className={`flex flex-col items-center p-2 rounded-lg text-xs transition-colors ${
-                            disabilityType === id 
-                            ? 'bg-blue-600 text-white high-contrast:bg-yellow-400 high-contrast:text-black' 
-                            : 'bg-gray-100 hover:bg-gray-200 text-gray-700 high-contrast:bg-gray-800 high-contrast:text-white'
-                        }`}
-                    >
-                        <Icon size={16} className="mb-1" />
-                        {label}
-                    </button>
-                ))}
-            </div>
+          <h3 className="text-xs font-bold text-gray-500 uppercase high-contrast:text-yellow-400">Assistive Mode</h3>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { id: 'visual',    icon: Eye,      label: 'Visual' },
+              { id: 'hearing',   icon: Ear,      label: 'Hearing' },
+              { id: 'motor',     icon: Activity, label: 'Motor' },
+              { id: 'cognitive', icon: Brain,    label: 'Cognitive' }
+            ].map(({ id, icon: Icon, label }) => (
+              <button
+                key={id}
+                onClick={() => setDisabilityType(disabilityType === id ? 'none' : id)}
+                className={`flex flex-col items-center p-2 rounded-lg text-xs transition-colors ${
+                  disabilityType === id
+                    ? 'bg-blue-600 text-white high-contrast:bg-yellow-400 high-contrast:text-black'
+                    : 'bg-gray-100 hover:bg-gray-200 text-gray-700 high-contrast:bg-gray-800 high-contrast:text-white'
+                }`}
+              >
+                <Icon size={16} className="mb-1" />
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="border-t border-gray-200 my-1 high-contrast:border-gray-700" />
@@ -67,45 +74,90 @@ const AccessibilityControls = () => {
 
         {/* Toggles */}
         <div className="space-y-2">
-          <button 
+          {/* High Contrast */}
+          <button
             onClick={toggleContrast}
             className={`w-full flex items-center justify-between p-2 rounded-lg text-sm transition-colors ${
-                highContrast ? 'bg-black text-yellow-400 border border-yellow-400' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+              highContrast ? 'bg-black text-yellow-400 border border-yellow-400' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
             }`}
           >
             <span>High Contrast</span>
             <Moon size={16} />
           </button>
 
-          <button 
+          {/* Focus Mode */}
+          <button
             onClick={toggleFocusMode}
             className={`w-full flex items-center justify-between p-2 rounded-lg text-sm transition-colors ${
-                focusMode ? 'bg-purple-100 text-purple-700 border border-purple-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+              focusMode ? 'bg-purple-100 text-purple-700 border border-purple-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
             }`}
           >
             <span>Focus Mode</span>
             <Brain size={16} />
           </button>
-          
-          <button 
+
+          {/* Captions */}
+          <button
             onClick={toggleCaptions}
             className={`w-full flex items-center justify-between p-2 rounded-lg text-sm transition-colors ${
-                captionsEnabled ? 'bg-green-100 text-green-700 border border-green-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+              captionsEnabled ? 'bg-green-100 text-green-700 border border-green-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
             }`}
           >
             <span>Captions</span>
             <Ear size={16} />
           </button>
-          
-           <button 
+
+          {/* ── Eye Tracker ─────────────────────────────────── */}
+          <button
+            id="eye-tracker-btn"
             onClick={toggleEyeTracking}
             className={`w-full flex items-center justify-between p-2 rounded-lg text-sm transition-colors ${
-                eyeTrackingEnabled ? 'bg-red-100 text-red-700 border border-red-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+              statusClass(eyeTrackingStatus, 'bg-red-100 text-red-700 border-red-300')
             }`}
           >
-            <span>Eye Tracker</span>
-            <Eye size={16} />
+            <span>
+              {eyeTrackingStatus === 'loading' ? 'Loading...' :
+               eyeTrackingStatus === 'active'  ? 'Eye Tracker ON' :
+               eyeTrackingStatus === 'error'   ? 'Camera Error' : 'Eye Tracker'}
+            </span>
+            {eyeTrackingStatus === 'loading'
+              ? <Loader size={16} className="animate-spin" />
+              : <Eye size={16} />
+            }
           </button>
+          {eyeTrackingStatus === 'active' && (
+            <p className="text-xs text-red-600 px-1">👁️ Active — look at edges to scroll</p>
+          )}
+          {eyeTrackingStatus === 'error' && (
+            <p className="text-xs text-orange-600 px-1">Camera denied. Check browser settings.</p>
+          )}
+
+          {/* ── Hand Control ─────────────────────────────────── */}
+          <button
+            id="hand-tracker-btn"
+            onClick={toggleHandTracking}
+            className={`w-full flex items-center justify-between p-2 rounded-lg text-sm transition-colors ${
+              statusClass(handTrackingStatus, 'bg-indigo-100 text-indigo-700 border-indigo-300')
+            }`}
+          >
+            <span>
+              {handTrackingStatus === 'loading' ? 'Loading...' :
+               handTrackingStatus === 'active'  ? 'Hand Control ON' :
+               handTrackingStatus === 'error'   ? 'Camera Error' : 'Hand Control'}
+            </span>
+            {handTrackingStatus === 'loading'
+              ? <Loader size={16} className="animate-spin" />
+              : <Hand size={16} />
+            }
+          </button>
+          {handTrackingStatus === 'active' && (
+            <p className="text-xs text-indigo-600 px-1">
+              ☝️ Up &nbsp;✌️ Down &nbsp;👌 Click &nbsp;🖐️ Back
+            </p>
+          )}
+          {handTrackingStatus === 'error' && (
+            <p className="text-xs text-orange-600 px-1">Camera denied. Check browser settings.</p>
+          )}
         </div>
       </div>
     </div>

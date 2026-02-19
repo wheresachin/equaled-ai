@@ -4,12 +4,10 @@ import Sidebar from './Sidebar';
 import AccessibilityControls from './AccessibilityControls';
 import LiveCaption from './LiveCaption';
 import { useAccessibility } from '../context/AccessibilityContext';
-import { useEyeTracking } from '../hooks/useEyeTracking';
 import { useVoiceCommands } from '../hooks/useVoiceCommands';
 
 const Layout = () => {
-    const { highContrast, eyeTrackingEnabled } = useAccessibility();
-    useEyeTracking(eyeTrackingEnabled);
+    const { highContrast } = useAccessibility();
     useVoiceCommands(); // Activate voice commands globally
 
     return (

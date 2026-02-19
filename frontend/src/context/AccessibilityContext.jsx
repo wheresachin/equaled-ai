@@ -9,6 +9,9 @@ export const AccessibilityProvider = ({ children }) => {
   const [focusMode, setFocusMode] = useState(false);
   const [captionsEnabled, setCaptionsEnabled] = useState(false);
   const [eyeTrackingEnabled, setEyeTrackingEnabled] = useState(false);
+  const [eyeTrackingStatus, setEyeTrackingStatus] = useState('idle');
+  const [handTrackingEnabled, setHandTrackingEnabled] = useState(false);
+  const [handTrackingStatus, setHandTrackingStatus] = useState('idle');
 
   // Apply disability defaults when type changes
   useEffect(() => {
@@ -64,6 +67,7 @@ export const AccessibilityProvider = ({ children }) => {
   const toggleFocusMode = () => setFocusMode((prev) => !prev);
   const toggleCaptions = () => setCaptionsEnabled((prev) => !prev);
   const toggleEyeTracking = () => setEyeTrackingEnabled((prev) => !prev);
+  const toggleHandTracking = () => setHandTrackingEnabled((prev) => !prev);
 
   return (
     <AccessibilityContext.Provider
@@ -81,6 +85,12 @@ export const AccessibilityProvider = ({ children }) => {
         toggleCaptions,
         eyeTrackingEnabled,
         toggleEyeTracking,
+        eyeTrackingStatus,
+        setEyeTrackingStatus,
+        handTrackingEnabled,
+        toggleHandTracking,
+        handTrackingStatus,
+        setHandTrackingStatus,
       }}
     >
       {children}
