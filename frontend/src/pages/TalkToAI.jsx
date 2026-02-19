@@ -83,17 +83,27 @@ const TalkToAI = () => {
     try {
       const stored = localStorage.getItem('user');
       const token = stored ? JSON.parse(stored)?.token : null;
+      const headers = {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      };
+      const body = JSON.stringify({ message: userMessage });
 
-      const res = await fetch(`${BACKEND_URL}/api/ai/chat`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ message: userMessage }),
-      });
+      // Try primary URL first, then fallback to local dev backend
+      let res;
+      try {
+        res = await fetch(`${BACKEND_URL}/api/ai/chat`, { method: 'POST', headers, body });
+        if (!res.ok && BACKEND_URL !== 'http://localhost:5000') {
+          // Primary failed — retry with local dev backend
+          res = await fetch(`http://localhost:5000/api/ai/chat`, { method: 'POST', headers, body });
+        }
+      } catch {
+        // Network error on primary — try local
+        res = await fetch(`http://localhost:5000/api/ai/chat`, { method: 'POST', headers, body });
+      }
 
       const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Server error');
       const reply = data.reply || 'Sorry, I could not understand that.';
 
       setMessages(prev => [...prev, { role: 'ai', text: reply }]);

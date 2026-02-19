@@ -81,10 +81,10 @@ export const useVoiceControl = ({
         return;
 
       // ── Navigation ──
-      case INTENTS.NAVIGATE_HOME: navigate('/'); break;
+      case INTENTS.NAVIGATE_HOME:      navigate('/home'); break;
       case INTENTS.NAVIGATE_DASHBOARD: navigate('/dashboard'); break;
-      case INTENTS.NAVIGATE_LESSONS: navigate('/dashboard'); break;
-      case INTENTS.NAVIGATE_BACK: window.history.back(); break;
+      case INTENTS.NAVIGATE_LESSONS:   navigate('/lesson/1'); break;
+      case INTENTS.NAVIGATE_BACK:      window.history.back(); break;
 
       // ── Font ──
       case INTENTS.INCREASE_FONT: acc.increaseFont?.(); break;
@@ -127,6 +127,13 @@ export const useVoiceControl = ({
       // ── Scroll ──
       case INTENTS.SCROLL_UP:   window.scrollBy({ top: -400, behavior: 'smooth' }); break;
       case INTENTS.SCROLL_DOWN: window.scrollBy({ top: 400,  behavior: 'smooth' }); break;
+
+      // ── Disability Modes ──
+      case INTENTS.SET_VISUAL_MODE:       acc.setDisabilityType?.('visual');    break;
+      case INTENTS.SET_HEARING_MODE:      acc.setDisabilityType?.('hearing');   break;
+      case INTENTS.SET_MOTOR_MODE:        acc.setDisabilityType?.('motor');     break;
+      case INTENTS.SET_COGNITIVE_MODE:    acc.setDisabilityType?.('cognitive'); break;
+      case INTENTS.RESET_DISABILITY_MODE: acc.setDisabilityType?.('none');      break;
 
       default: break;
     }

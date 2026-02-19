@@ -26,7 +26,13 @@ export const INTENTS = {
   SCROLL_UP:              'SCROLL_UP',
   SCROLL_DOWN:            'SCROLL_DOWN',
   STOP_LISTENING:         'STOP_LISTENING',
-  ENABLE_VOICE:           'ENABLE_VOICE', // New: wake-word intent
+  ENABLE_VOICE:           'ENABLE_VOICE',
+  // Disability modes
+  SET_VISUAL_MODE:        'SET_VISUAL_MODE',
+  SET_HEARING_MODE:       'SET_HEARING_MODE',
+  SET_MOTOR_MODE:         'SET_MOTOR_MODE',
+  SET_COGNITIVE_MODE:     'SET_COGNITIVE_MODE',
+  RESET_DISABILITY_MODE:  'RESET_DISABILITY_MODE',
 };
 
 // ─── Command Map ───────────────────────────────────────────────────
@@ -126,6 +132,31 @@ export const COMMAND_MAP = {
     'stop listening', 'voice off', 'voice band karo', 'quiet',
     'आवाज बंद करो', 'sunaai band karo', 'stop',
   ],
+  // ── Disability Modes ──
+  [INTENTS.SET_VISUAL_MODE]: [
+    'visual mode', 'enable visual mode', 'visual mode on', 'blind mode',
+    'drishti mode', 'visual accessibility', 'आंखों का मोड', 'visual on',
+    'vision mode', 'visual impairment mode', 'drashti mode',
+  ],
+  [INTENTS.SET_HEARING_MODE]: [
+    'hearing mode', 'enable hearing mode', 'hearing mode on', 'deaf mode',
+    'shravaan mode', 'hearing accessibility', 'बहरापन मोड', 'hearing on',
+    'caption mode', 'subtitle mode',
+  ],
+  [INTENTS.SET_MOTOR_MODE]: [
+    'motor mode', 'enable motor mode', 'motor mode on', 'mobility mode',
+    'haath mode', 'motor accessibility', 'motor impairment mode', 'motor on',
+    'physical mode',
+  ],
+  [INTENTS.SET_COGNITIVE_MODE]: [
+    'cognitive mode', 'enable cognitive mode', 'focus mode on', 'learning mode',
+    'dhyan mode', 'cognitive accessibility', 'cognitive on', 'concentration mode',
+  ],
+  [INTENTS.RESET_DISABILITY_MODE]: [
+    'reset mode', 'normal mode', 'default mode', 'disable mode',
+    'mode band karo', 'reset accessibility', 'samaanya mode', 'सामान्य मोड',
+    'no mode', 'clear mode',
+  ],
 };
 
 // ─── Text normalization ────────────────────────────────────────────
@@ -217,6 +248,11 @@ export const FEEDBACK = {
   [INTENTS.SCROLL_DOWN]:          { en: 'Scrolling down',             hi: 'नीचे स्क्रॉल हो रहा है' },
   [INTENTS.STOP_LISTENING]:       { en: 'Voice control stopped',      hi: 'आवाज नियंत्रण बंद है' },
   [INTENTS.ENABLE_VOICE]:         { en: 'Voice control activated',    hi: 'वॉइस कंट्रोल चालू हो गया है' },
+  [INTENTS.SET_VISUAL_MODE]:      { en: 'Visual mode enabled',        hi: 'विज़ुअल मोड चालू है' },
+  [INTENTS.SET_HEARING_MODE]:     { en: 'Hearing mode enabled',       hi: 'सुनने का मोड चालू है' },
+  [INTENTS.SET_MOTOR_MODE]:       { en: 'Motor mode enabled',         hi: 'मोटर मोड चालू है' },
+  [INTENTS.SET_COGNITIVE_MODE]:   { en: 'Cognitive mode enabled',     hi: 'कॉग्निटिव मोड चालू है' },
+  [INTENTS.RESET_DISABILITY_MODE]:{ en: 'Accessibility reset',        hi: 'सब वापस सामान्य है' },
   NOT_UNDERSTOOD:                  { en: "Command not understood",     hi: 'कमांड समझ में नहीं आई' },
 };
 
