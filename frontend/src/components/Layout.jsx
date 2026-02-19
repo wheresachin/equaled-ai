@@ -12,9 +12,12 @@ const Layout = () => {
     const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
     return (
-        <div className={`flex min-h-screen transition-colors duration-300 ${
-            highContrast ? 'bg-black' : 'bg-gray-50'
-        }`}>
+        <div 
+            className={`flex min-h-screen transition-colors duration-300 ${
+                highContrast ? 'bg-black' : 'bg-gray-50'
+            }`}
+            style={{ '--sidebar-width': isCollapsed ? '80px' : '256px' }}
+        >
             <Sidebar
                 isOpen={sidebarOpen}
                 onClose={() => setSidebarOpen(false)}

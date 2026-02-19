@@ -1,62 +1,63 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 
-export const useSpeechToText = () => {
-  const [isListening, setIsListening] = useState(false);
-  const [transcript, setTranscript] = useState('');
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+export const useSpeechToText = ({ lang = 'hi-IN' } = {}) => {
+  const [isListening, setIsListening]   = useState(false);
+  const [transcript, setTranscript]     = useState('');
+  const [supported]                     = useState(() => !!SpeechRecognition);
   const recognitionRef = useRef(null);
 
-  useEffect(() => {
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      console.warn("Speech Recognition not supported in this browser.");
-      return;
-    }
+  const startListening = useCallback(() => {
+    if (!supported || isListening) return;
 
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognitionRef.current = new SpeechRecognition();
-    recognitionRef.current.continuous = true;
-    recognitionRef.current.interimResults = true;
-    recognitionRef.current.lang = 'en-US';
+    // ── Pause global voice assistant so mic doesn't conflict ──
+    window.dispatchEvent(new CustomEvent('equaled:stt-start'));
 
-    recognitionRef.current.onstart = () => setIsListening(true);
-    recognitionRef.current.onend = () => setIsListening(false);
-    
-    recognitionRef.current.onresult = (event) => {
-      let finalTranscript = '';
-      let interimTranscript = '';
+    const rec = new SpeechRecognition();
+    rec.continuous      = false;   // Single answer capture
+    rec.interimResults  = true;
+    rec.lang            = lang;
 
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
-        if (event.results[i].isFinal) {
-          finalTranscript += event.results[i][0].transcript;
-        } else {
-          interimTranscript += event.results[i][0].transcript;
-        }
+    rec.onstart  = () => setIsListening(true);
+    rec.onend    = () => {
+      setIsListening(false);
+      recognitionRef.current = null;
+      // Resume global voice assistant
+      window.dispatchEvent(new CustomEvent('equaled:stt-end'));
+    };
+    rec.onerror  = (e) => {
+      console.error('[STT] Error:', e.error);
+      setIsListening(false);
+      window.dispatchEvent(new CustomEvent('equaled:stt-end'));
+    };
+    rec.onresult = (event) => {
+      let final = '';
+      let interim = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        if (event.results[i].isFinal) final   += event.results[i][0].transcript;
+        else                          interim += event.results[i][0].transcript;
       }
-      // Combine previous if storing history, but for now just current session
-      if(finalTranscript) setTranscript(prev => prev + ' ' + finalTranscript);
+      if (final)   setTranscript(prev => (prev + ' ' + final).trim());
+      else if (interim) setTranscript(prev => prev); // keep existing
     };
 
-    return () => {
-       if (recognitionRef.current) recognitionRef.current.stop();
-    };
+    try {
+      rec.start();
+      recognitionRef.current = rec;
+    } catch (e) {
+      console.error('[STT] Start failed:', e);
+      window.dispatchEvent(new CustomEvent('equaled:stt-end'));
+    }
+  }, [supported, isListening, lang]);
+
+  const stopListening = useCallback(() => {
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop(); } catch (e) {}
+    }
   }, []);
 
-  const startListening = () => {
-    if (recognitionRef.current && !isListening) {
-      try {
-          recognitionRef.current.start();
-      } catch(e) {
-          console.error("Failed to start recognition:", e);
-      }
-    }
-  };
+  const resetTranscript = useCallback(() => setTranscript(''), []);
 
-  const stopListening = () => {
-    if (recognitionRef.current && isListening) {
-      recognitionRef.current.stop();
-    }
-  };
-
-  const resetTranscript = () => setTranscript('');
-
-  return { isListening, transcript, startListening, stopListening, resetTranscript };
+  return { isListening, transcript, startListening, stopListening, resetTranscript, supported };
 };

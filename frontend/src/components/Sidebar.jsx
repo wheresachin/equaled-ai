@@ -113,23 +113,6 @@ const Sidebar = ({ isOpen, onClose, isCollapsed, setIsCollapsed }) => {
         </nav>
 
         <div className="mt-auto pt-4 space-y-2 flex-shrink-0">
-          {/* Voice Status Indicator */}
-          {voiceEnabled && (
-            <div 
-              className={`mx-1 p-2 rounded-xl flex items-center justify-center transition-all duration-300
-                ${isAwake 
-                  ? 'bg-indigo-50 text-indigo-700 shadow-sm' 
-                  : 'text-gray-400 opacity-60'
-                }
-                high-contrast:text-yellow-400
-              `}
-              title={isAwake ? "Voice active" : "Voice standby"}
-            >
-              <div className={isAwake ? 'animate-pulse text-indigo-600' : ''}>
-                {isAwake ? <Mic size={20} /> : <MicOff size={20} />}
-              </div>
-            </div>
-          )}
           
           {user && (
               <button 

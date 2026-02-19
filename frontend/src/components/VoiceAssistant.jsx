@@ -1,13 +1,11 @@
 /**
  * VoiceAssistant.jsx
  *
- * Global voice control UI:
+ * Global voice control UI (Restored to classic version):
  *  - Glowing mic button (fixed bottom-center)
+ *  - Floating Help and Language icons
  *  - Live transcript preview
  *  - Success / error toast feedback
- *  - Language switcher (EN / HI)
- *  - Fully accessible (ARIA, keyboard)
- *  - High-contrast compatible
  */
 import React, { useState, useCallback, useEffect } from 'react';
 import { Mic, MicOff, Globe, HelpCircle, X } from 'lucide-react';
@@ -56,7 +54,7 @@ const Transcript = ({ text, interim }) => {
 // ── Main Component ────────────────────────────────────────────────
 const VoiceAssistant = () => {
   const accessibility = useAccessibility();
-  const { voiceEnabled, voiceLang, toggleVoice, setVoiceLang, isAwake } = accessibility;
+  const { voiceEnabled, voiceLang, toggleVoice, setVoiceLang, isAwake, highContrast } = accessibility;
 
   const [listening, setListening]   = useState(false);
   const [transcript, setTranscript] = useState('');
@@ -94,7 +92,7 @@ const VoiceAssistant = () => {
     if (!val) setTranscript('');
   }, []);
 
-  // Handle external voice-disable event (from STOP_LISTENING intent)
+  // Handle external voice-disable event
   useEffect(() => {
     const handler = () => { if (voiceEnabled) toggleVoice(); };
     window.addEventListener('equaled:voice-disable', handler);
@@ -125,10 +123,10 @@ const VoiceAssistant = () => {
       {/* Transcript Preview */}
       {transcript && isAwake && <Transcript text={transcript} interim={interim} />}
 
-      {/* Help Overlay - Only show if not awake or explicitly requested */}
+      {/* Help Modal */}
       {showHelp && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full max-h-[80vh] overflow-hidden flex flex-col animate-fadeIn">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full max-h-[80vh] overflow-hidden flex flex-col animate-in fade-in zoom-in duration-300">
             <div className="p-4 border-b flex justify-between items-center bg-gray-50">
               <h3 className="font-bold text-lg text-gray-800">🎙️ Voice Commands</h3>
               <button onClick={() => setShowHelp(false)} className="p-1 hover:bg-gray-200 rounded-full">
@@ -147,48 +145,70 @@ const VoiceAssistant = () => {
                   <li>"Go Home" / "घर जाओ"</li>
                 </ul>
               </div>
-              {/* ... existing categories ... */}
+              <div>
+                <h4 className="font-semibold text-indigo-600 mb-1">Accessibility</h4>
+                <ul className="list-disc pl-4 space-y-1 text-gray-700">
+                  <li>"Enable Visual Mode" / "विजुअल मोड ऑन"</li>
+                  <li>"Reset Settings" / "सेटिंग्स रिसेट करो"</li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Mic button group */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[999998] flex flex-col items-center gap-2">
+      {/* Mic button group - Slightly left of center */}
+      <div className="fixed bottom-6 left-[23%] -translate-x-1/2 z-[999998] flex flex-col items-center gap-2 transition-all duration-300">
         
-        {/* Top Controls - Hide when awake for clean UI */}
+        {/* Language Switcher Overlay */}
+        {showLangMenu && (
+          <div className="absolute bottom-24 bg-white/95 backdrop-blur border border-gray-100 p-2 rounded-2xl shadow-2xl flex flex-col gap-1 w-32 animate-in slide-in-from-bottom-2 fade-in">
+            {langs.map(l => (
+              <button
+                key={l.code}
+                onClick={() => { setVoiceLang(l.code); setShowLangMenu(false); }}
+                className={`text-left px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+                  voiceLang === l.code ? 'bg-indigo-600 text-white' : 'hover:bg-gray-100 text-gray-600'
+                }`}
+              >
+                {l.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Top Controls (Help & Globe) */}
         {!isAwake && !listening && (
           <div className="flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2">
             <button
               onClick={() => setShowHelp(true)}
-              className="w-8 h-8 rounded-full bg-white/90 border border-gray-200 text-gray-600 shadow hover:bg-gray-50 transition-colors backdrop-blur flex items-center justify-center"
+              className="w-8 h-8 rounded-full bg-white/90 border border-gray-200 text-gray-600 shadow-sm hover:bg-gray-50 flex items-center justify-center transition-colors"
             >
               <HelpCircle size={16} />
             </button>
             <button
               onClick={() => setShowLangMenu(m => !m)}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/90 border border-gray-200 text-gray-600 text-xs font-medium shadow hover:bg-gray-50 transition-colors backdrop-blur"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/90 border border-gray-200 text-gray-600 text-[10px] font-bold shadow-sm hover:bg-gray-50 transition-colors"
             >
               <Globe size={14} />
-              {langs.find(l => l.code === voiceLang)?.label || 'EN'}
+              {langs.find(l => l.code === voiceLang)?.label.split(' ')[0] || 'EN'}
             </button>
           </div>
         )}
 
+        {/* Main Mic Button */}
         <button
-          aria-label={isAwake ? 'Voice active' : 'Listening for wake word'}
           onClick={toggleVoice}
           disabled={permDenied}
           className={`
             relative w-16 h-16 rounded-full flex items-center justify-center
-            text-white font-bold shadow-2xl transition-all duration-300
+            text-white shadow-2xl transition-all duration-300
             ${isAwake
               ? 'bg-gradient-to-br from-indigo-500 to-purple-600 scale-110'
               : 'bg-white/80 text-gray-400 border border-gray-200 backdrop-blur-sm'}
-            high-contrast:bg-yellow-400 high-contrast:text-black
+            ${highContrast ? 'high-contrast:bg-yellow-400 high-contrast:text-black' : ''}
           `}
         >
-          {/* Pulsing rings when actively listening */}
           {listening && (
             <>
               <span className={`absolute inset-0 rounded-full animate-ping opacity-20 ${isAwake ? 'bg-indigo-400' : 'bg-blue-300'}`} />
@@ -197,30 +217,25 @@ const VoiceAssistant = () => {
           )}
 
           {isAwake ? (
-            <Mic size={32} className="animate-pulse text-white transition-all" />
+            <Mic size={32} className="animate-pulse" />
           ) : (
-            <Mic size={28} className={`transition-all ${listening ? 'text-blue-500' : 'text-indigo-300 opacity-70'}`} />
+            <Mic size={28} className={listening ? 'text-blue-500' : 'text-indigo-300 opacity-70'} />
           )}
         </button>
 
-        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full flex items-center gap-1.5 shadow-sm
-          ${ permDenied  ? 'bg-red-100 text-red-500 border border-red-200' :
-             isAwake     ? 'bg-indigo-600 text-white border border-indigo-500' :
-             listening   ? 'bg-blue-50 text-blue-500 border border-blue-200' :
-                           'bg-white text-gray-400 border border-gray-100'}`}
+        {/* Small Status Pill */}
+        <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border shadow-sm
+          ${ permDenied  ? 'bg-red-50 text-red-500 border-red-100' :
+             isAwake     ? 'bg-indigo-600 text-white border-indigo-500' :
+             listening   ? 'bg-blue-50 text-blue-500 border-blue-100' :
+                           'bg-white text-gray-400 border-gray-100'}`}
         >
-          {permDenied   ? '🚫 Disabled' :
-           isAwake      ? <><Mic size={10} className="animate-pulse" /> Active</> :
-           listening    ? <><span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" /> Listening...</> :
-           voiceEnabled ? <><MicOff size={10} /> Ready</> :
+          {permDenied   ? '🚫 No Mic' :
+           isAwake      ? 'Active' :
+           listening    ? 'Listening...' :
+           voiceEnabled ? 'Ready' :
                           'Off'}
         </span>
-        {/* Permission error hint */}
-        {permDenied && (
-          <p className="text-xs text-red-500 text-center max-w-[200px]">
-            Mic permission denied. Allow in browser settings.
-          </p>
-        )}
       </div>
     </>
   );

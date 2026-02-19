@@ -268,5 +268,27 @@ export const useVoiceControl = ({
     return () => stopRecognition();
   }, [enabled, supported, permDenied, startRecognition, stopRecognition]);
 
+  // ── Pause/resume when Quick Check STT mic is used ──────────────────────
+  // Prevents mic conflict: only one SpeechRecognition at a time
+  useEffect(() => {
+    const onSTTStart = () => {
+      if (isRunning.current) {
+        try { recognitionRef.current?.abort(); } catch (e) {}
+        isRunning.current = false;
+      }
+    };
+    const onSTTEnd = () => {
+      if (shouldBeRunning.current && !isRunning.current && !permDenied) {
+        setTimeout(() => startRecognition(), 400);
+      }
+    };
+    window.addEventListener('equaled:stt-start', onSTTStart);
+    window.addEventListener('equaled:stt-end',   onSTTEnd);
+    return () => {
+      window.removeEventListener('equaled:stt-start', onSTTStart);
+      window.removeEventListener('equaled:stt-end',   onSTTEnd);
+    };
+  }, [startRecognition, permDenied]);
+
   return { supported, permDenied };
 };
