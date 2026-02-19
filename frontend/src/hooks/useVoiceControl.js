@@ -15,7 +15,7 @@ const SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition;
 
 const SEAMLESS_RESTART_DELAY = 50;  // Minimal flicker
-const COMMAND_COOLDOWN       = 1000;
+const COMMAND_COOLDOWN       = 400; // Reduced for snappy response
 
 export const useVoiceControl = ({
   enabled,
@@ -192,14 +192,24 @@ export const useVoiceControl = ({
       const results = Array.from(event.results);
       const latest  = results[results.length - 1];
       const text    = latest[0].transcript;
+      const isInterim = !latest.isFinal;
       
-      onTranscriptRef.current?.(text, !latest.isFinal);
+      onTranscriptRef.current?.(text, isInterim);
 
-      if (!latest.isFinal) return;
-
-      console.log('[Voice] Final Speech:', text);
       const now = Date.now();
       if (now - lastCommandAt.current < COMMAND_COOLDOWN) return;
+
+      // For interim, only try to match the wake-word for instant response
+      if (isInterim) {
+        const intent = processCommand(text);
+        if (intent === INTENTS.ENABLE_VOICE && !isAwakeRef.current) {
+          lastCommandAt.current = now;
+          executeIntentRef.current?.(intent, langRef.current);
+        }
+        return;
+      }
+
+      console.log('[Voice] Final Speech:', text);
 
       let intent = null;
       for (let i = 0; i < latest.length; i++) {

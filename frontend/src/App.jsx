@@ -22,6 +22,8 @@ import CreateQuiz from './pages/CreateQuiz';
 import StudentProgress from './pages/StudentProgress';
 import SubmissionReview from './pages/SubmissionReview';
 import ManageStudents from './pages/ManageStudents';
+import TalkToAI from './pages/TalkToAI';
+import Home from './pages/Home';
 
 // Eye tracking activator — student only
 const EyeTrackingActivator = () => {
@@ -102,8 +104,10 @@ function App() {
             <Route path="/manage-students" element={<ManageStudents />} />
             
             <Route element={<Layout />}>
+              <Route path="/home"       element={<Home />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/lesson/:id" element={<Lesson />} />
+              <Route path="/talk-to-ai" element={<TalkToAI />} />
             </Route>
 
             <Route path="*" element={<Navigate to="/" replace />} />

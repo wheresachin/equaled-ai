@@ -14,7 +14,7 @@ export const speak = (text, lang = 'en-US') => {
 
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = lang;
-  utterance.rate = 1.0; // Normal speed
+  utterance.rate = 1.35; // Faster = snappier feedback
   utterance.pitch = 1.0;
 
   // Enhance Hindi voice selection if available

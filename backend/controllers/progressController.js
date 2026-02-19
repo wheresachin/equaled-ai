@@ -1,13 +1,42 @@
 const Progress = require('../models/Progress');
+const Lesson = require('../models/Lesson');
 const User = require('../models/User');
 
 // @desc    Get progress for a student
 // @route   GET /api/progress/student/:studentId
-// @access  Teacher/Admin (or Student for themselves)
+// @access  Teacher/Admin
 const getStudentProgress = async (req, res) => {
     try {
         const progress = await Progress.find({ userId: req.params.studentId }).populate('lessonId', 'title difficulty');
         res.json(progress);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Get current student's own progress summary
+// @route   GET /api/progress/me
+// @access  Student
+const getMyProgress = async (req, res) => {
+    try {
+        const progressRecords = await Progress.find({ userId: req.user._id })
+            .populate('lessonId', 'title difficulty category');
+
+        const totalLessons = await Lesson.countDocuments();
+        const completedLessons = progressRecords.filter(p => p.isCompleted).length;
+        const totalTimeSpent = progressRecords.reduce((sum, p) => sum + (p.timeSpent || 0), 0);
+        const avgQuizScore = progressRecords.length
+            ? Math.round(progressRecords.reduce((sum, p) => sum + (p.quizScore || 0), 0) / progressRecords.length)
+            : 0;
+
+        res.json({
+            totalLessons,
+            completedLessons,
+            totalTimeSpent,
+            avgQuizScore,
+            progressPercent: totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0,
+            records: progressRecords,
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -18,11 +47,9 @@ const getStudentProgress = async (req, res) => {
 // @access  Teacher
 const getClassProgress = async (req, res) => {
     try {
-        // Fetch all progress records, populated with user and lesson info
         const progress = await Progress.find({})
             .populate('userId', 'name email')
             .populate('lessonId', 'title');
-        
         res.json(progress);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -60,6 +87,7 @@ const updateProgress = async (req, res) => {
 
 module.exports = {
     getStudentProgress,
+    getMyProgress,
     getClassProgress,
     updateProgress
 };
