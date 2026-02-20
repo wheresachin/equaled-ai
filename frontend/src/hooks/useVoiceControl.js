@@ -15,7 +15,7 @@ const SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition;
 
 const SEAMLESS_RESTART_DELAY = 50;  // Minimal flicker
-const COMMAND_COOLDOWN       = 400; // Reduced for snappy response
+const COMMAND_COOLDOWN       = 1500; // Increased to prevent double-firings since we execute on interim
 
 export const useVoiceControl = ({
   enabled,
@@ -207,10 +207,15 @@ export const useVoiceControl = ({
       const now = Date.now();
       if (now - lastCommandAt.current < COMMAND_COOLDOWN) return;
 
-      // For interim, only try to match the wake-word for instant response
+      // For interim, execute immediately for lightning-fast response
       if (isInterim) {
         const intent = processCommand(text);
+        if (!intent) return;
+        
         if (intent === INTENTS.ENABLE_VOICE && !isAwakeRef.current) {
+          lastCommandAt.current = now;
+          executeIntentRef.current?.(intent, langRef.current);
+        } else if (isAwakeRef.current) {
           lastCommandAt.current = now;
           executeIntentRef.current?.(intent, langRef.current);
         }

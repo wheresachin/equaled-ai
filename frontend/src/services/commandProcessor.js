@@ -135,7 +135,8 @@ export const COMMAND_MAP = {
   ],
   [INTENTS.STOP_LISTENING]: [
     'stop listening', 'voice off', 'voice band karo', 'quiet',
-    'आवाज बंद करो', 'sunaai band karo', 'stop',
+    'आवाज बंद करो', 'sunaai band karo', 'stop', 'sleep mode',
+    'voice control off', 'turn off voice control', 'वॉइस कंट्रोल ऑफ', 'वॉयस कंट्रोल ऑफ'
   ],
   // ── Disability Modes ──
   [INTENTS.SET_VISUAL_MODE]: [
