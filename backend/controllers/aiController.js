@@ -31,7 +31,7 @@ const chatWithAI = async (req, res) => {
     console.error('[AI] Gemini error:', error?.message || error);
     res.status(500).json({
       message: 'AI is not available right now. Please try again.',
-      error: error?.message,
+      error: error?.message || (error && error.toString ? error.toString() : 'Unknown error'),
     });
   }
 };

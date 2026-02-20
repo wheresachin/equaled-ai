@@ -2,8 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Play, Clock, Star, CheckCircle2, BookOpen, Trophy, TrendingUp, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-
-const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import API_BASE from '../utils/api';
 
 // ── Mock lessons (shown when DB is empty) ─────────────────────────────────
 const MOCK_LESSONS = [
@@ -104,8 +103,8 @@ const Dashboard = () => {
 
     try {
       const [lessonsRes, progressRes] = await Promise.all([
-        fetch(`${API}/api/lessons`, { headers }),
-        fetch(`${API}/api/progress/me`, { headers }),
+        fetch(`${API_BASE}/api/lessons`, { headers }),
+        fetch(`${API_BASE}/api/progress/me`, { headers }),
       ]);
 
       const fetchedLessons = lessonsRes.ok ? await lessonsRes.json() : [];

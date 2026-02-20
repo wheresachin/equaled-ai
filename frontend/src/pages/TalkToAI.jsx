@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mic, MicOff, Bot, ArrowLeft, Loader2, Volume2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-
-const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import API_BASE from '../utils/api';
 
 // ── State constants ────────────────────────────────────────────────────────
 const STATE = {
@@ -85,7 +84,7 @@ const TalkToAI = () => {
       const stored = localStorage.getItem('user');
       const token = stored ? JSON.parse(stored)?.token : null;
 
-      const res = await fetch(`${BACKEND_URL}/api/ai/chat`, {
+      const res = await fetch(`${API_BASE}/api/ai/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
