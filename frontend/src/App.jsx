@@ -50,8 +50,6 @@ const EyeTrackingActivator = () => {
   return null;
 };
 
-
-
 // Hand tracking activator — student only
 const HandTrackingActivator = () => {
   const { handTrackingEnabled, toggleHandTracking, setHandTrackingStatus } = useAccessibility();

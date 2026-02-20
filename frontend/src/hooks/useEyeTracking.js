@@ -257,7 +257,7 @@ export const useEyeTracking = (enabled) => {
 
     // ── Dwell click (stay 2s on same spot → click) ────────────────────────────
     const DWELL_MS   = 2000;
-    const DWELL_RADIUS = 60;
+    const DWELL_RADIUS = 90; // Increased for better stability/jitter handling
     const dwell = dwellRef.current;
     const dist = Math.hypot(x - dwell.x, y - dwell.y);
 
@@ -269,27 +269,41 @@ export const useEyeTracking = (enabled) => {
       cursor.style.background = 'rgba(239,68,68,0.2)';
       cursor.style.border = '3px solid rgba(239,68,68,0.9)';
       cursor.style.boxShadow = '0 0 20px rgba(239,68,68,0.5)';
+      cursor.style.transform = 'translate(-50%,-50%) scale(1)';
     } else if (!dwell.active) {
       // Gaze is stable — show fill progress
       const elapsed = performance.now() - dwell.startTime;
       const pct = Math.min(elapsed / DWELL_MS, 1);
       const deg = Math.round(pct * 360);
-      cursor.style.background = `conic-gradient(rgba(99,102,241,0.7) ${deg}deg, rgba(239,68,68,0.15) ${deg}deg)`;
-      cursor.style.border = '3px solid rgba(99,102,241,0.9)';
-      cursor.style.boxShadow = '0 0 24px rgba(99,102,241,0.6)';
+      
+      // Visual feedback: Conic gradient for progress + scaling effect
+      cursor.style.background = `conic-gradient(rgba(99,102,241,0.8) ${deg}deg, rgba(239,68,68,0.1) ${deg}deg)`;
+      cursor.style.border = '3px solid rgba(99,102,241,1)';
+      cursor.style.boxShadow = `0 0 ${20 + (pct * 20)}px rgba(99,102,241,0.7)`;
+      cursor.style.transform = `translate(-50%,-50%) scale(${1 + (pct * 0.2)})`;
 
       if (elapsed >= DWELL_MS) {
         // Fire click!
         dwell.active = true;
-        cursor.style.background = 'rgba(99,102,241,0.6)';
+        cursor.style.background = 'rgba(99,102,241,0.9)';
+        cursor.style.transform = 'translate(-50%,-50%) scale(0.9)'; // Impact shrink effect
+        
+        // Find element at gaze point
         const el = document.elementFromPoint(x, y);
-        if (el && el.id !== 'gaze-cursor') el.click();
-        // Reset after 800ms so next dwell can happen
+        // Ensure we don't click the cursor itself or its parent containers
+        if (el && !['gaze-cursor', 'eye-cam-container', 'gaze-hint-up', 'gaze-hint-down'].includes(el.id)) {
+          el.click();
+          // Visual "Flash" on click
+          cursor.style.boxShadow = '0 0 50px rgba(99,102,241,1)';
+        }
+        
+        // Reset after 1s so user can look around before next click
         setTimeout(() => {
           dwell.x = -999; dwell.y = -999;
           dwell.startTime = performance.now();
           dwell.active = false;
-        }, 800);
+          cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+        }, 1000);
       }
     }
 
