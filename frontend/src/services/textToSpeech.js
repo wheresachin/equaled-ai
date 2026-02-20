@@ -14,15 +14,34 @@ export const speak = (text, lang = 'en-US') => {
 
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = lang;
-  utterance.rate = 1.35; // Faster = snappier feedback
-  utterance.pitch = 1.0;
+  utterance.rate = 0.9; // Slower, more natural speed
+  utterance.pitch = 0.9; // Slightly lower pitch for a male tone
+  
+  const voices = window.speechSynthesis.getVoices();
 
-  // Enhance Hindi voice selection if available
   if (lang.startsWith('hi')) {
-    const voices = window.speechSynthesis.getVoices();
-    const hindiVoice = voices.find(v => v.lang.includes('hi') || v.lang.includes('Hindi'));
-    if (hindiVoice) utterance.voice = hindiVoice;
-    // Fallback: Some browsers might use Google Hindi
+    // Attempt to find a Hindi male voice (heuristics based on common names)
+    const hindiVoices = voices.filter(v => v.lang.includes('hi') || v.lang.includes('Hindi'));
+    let selectedVoice = hindiVoices.find(v => 
+      v.name.toLowerCase().includes('male') || 
+      v.name.toLowerCase().includes('rishi') || 
+      v.name.toLowerCase().includes('amit')
+    ) || hindiVoices[0]; // fallback to first Hindi voice if male not found
+    
+    if (selectedVoice) utterance.voice = selectedVoice;
+  } else {
+    // Attempt to find an English male voice
+    const engVoices = voices.filter(v => v.lang.includes('en'));
+    let selectedVoice = engVoices.find(v => 
+      v.name.toLowerCase().includes('male') || 
+      v.name.toLowerCase().includes('david') || 
+      v.name.toLowerCase().includes('mark') ||
+      v.name.toLowerCase().includes('guy') ||
+      v.name.toLowerCase().includes('brian') ||
+      v.name.toLowerCase().includes('daniel')
+    ) || engVoices[0]; // fallback to first English voice if male not found
+    
+    if (selectedVoice) utterance.voice = selectedVoice;
   }
 
   window.speechSynthesis.speak(utterance);

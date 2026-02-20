@@ -61,7 +61,7 @@ export const COMMAND_MAP = {
     'गो टू लेसन', 'ओपन लेसन', 'लेसन',
   ],
   [INTENTS.NAVIGATE_LOGIN]: [
-    'login', 'log in', 'sign in', 'login karo', 'open login', 'go to login', 
+    'login', 'log in', 'sign in', 'signin', 'sign-in', 'login karo', 'open login', 'go to login', 
     'लॉगिन', 'लॉग इन', 'लॉगिन पेज खोलो', 'sign in page',
   ],
   [INTENTS.NAVIGATE_BACK]: [

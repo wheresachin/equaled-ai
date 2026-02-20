@@ -301,7 +301,7 @@ const VoiceAssistant = () => {
            isAwake      ? 'Active' :
            listening    ? 'Listening...' :
            voiceEnabled ? 'Ready' :
-                          'Off'}
+                          'Deactivated'}
         </span>
       </div>
     </>
