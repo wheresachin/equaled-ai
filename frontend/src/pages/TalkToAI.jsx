@@ -95,7 +95,9 @@ const TalkToAI = () => {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Server error');
+      if (!res.ok) {
+        throw new Error(data.error ? `${data.message} Detail: ${data.error}` : data.message || 'Server error');
+      }
       const reply = data.reply || 'Sorry, I could not understand that.';
 
       setMessages(prev => [...prev, { role: 'ai', text: reply }]);
@@ -107,7 +109,7 @@ const TalkToAI = () => {
       });
     } catch (err) {
       console.error('[TalkToAI] Error:', err.message);
-      setErrorMsg(`AI error: ${err.message}. Try again.`);
+      setErrorMsg(`${err.message}`);
       setAppState(STATE.IDLE);
     }
   }, []);
