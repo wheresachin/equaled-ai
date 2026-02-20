@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAccessibility } from '../context/AccessibilityContext';
-import { Sun, Moon, Type, Menu, X } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { Sun, Moon, Type, Menu, X, LogOut, User, LayoutDashboard } from 'lucide-react';
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const { 
     highContrast, toggleContrast, 
     increaseFont
   } = useAccessibility();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -18,6 +21,21 @@ const Navbar = () => {
     { name: 'How It Works', path: '#how-it-works' },
     { name: 'Contact', path: '#contact' },
   ];
+
+  const handleLogout = () => {
+    logout();
+    setIsMenuOpen(false);
+    setShowUserMenu(false);
+  };
+
+  const getDashboardPath = () => {
+    if (!user) return '/';
+    if (user.role === 'admin') return '/admin-dashboard';
+    if (user.role === 'teacher') return '/teacher-dashboard';
+    return '/dashboard';
+  };
+
+  const isAdmin = user?.role === 'admin';
 
   return (
     <nav className="fixed w-full bg-white/90 backdrop-blur-md border-b border-gray-100 z-50 high-contrast:bg-black high-contrast:border-yellow-400">
@@ -31,9 +49,9 @@ const Navbar = () => {
             <span className="text-2xl font-bold text-gray-900 high-contrast:text-yellow-400">EqualEd</span>
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Navigation - Hidden for Admin */}
           <div className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => (
+            {!isAdmin && navLinks.map((link) => (
               <a 
                 key={link.name}
                 href={link.path} 
@@ -63,15 +81,57 @@ const Navbar = () => {
               </button>
             </div>
             
-            <Link to="/login" className="text-gray-700 font-medium hover:text-blue-600 high-contrast:text-white high-contrast:hover:text-yellow-400">
-              Login
-            </Link>
-            <Link 
-              to="/signup" 
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full font-bold transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 high-contrast:bg-yellow-400 high-contrast:text-black"
-            >
-              Sign Up
-            </Link>
+            {user ? (
+              <div className="flex items-center gap-3 relative">
+                <Link 
+                  to={getDashboardPath()}
+                  className="flex items-center gap-2 text-gray-700 font-medium hover:text-blue-600 high-contrast:text-white high-contrast:hover:text-yellow-400"
+                >
+                  <LayoutDashboard size={18} />
+                  Dashboard
+                </Link>
+
+                {/* Profile Pill -> Toggles Dropdown */}
+                <button 
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-full border border-blue-100 hover:bg-blue-100 transition-colors high-contrast:bg-gray-900 high-contrast:border-yellow-400"
+                >
+                  <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold high-contrast:bg-yellow-400 high-contrast:text-black">
+                    {user.name?.charAt(0) || <User size={14} />}
+                  </div>
+                  <span className="text-sm font-bold text-gray-800 high-contrast:text-white">{user.name}</span>
+                </button>
+
+                {/* Profile Dropdown */}
+                {showUserMenu && (
+                  <div className="absolute right-0 top-14 w-48 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 animate-in fade-in slide-in-from-top-2 high-contrast:bg-black high-contrast:border-yellow-400">
+                    <div className="px-4 py-2 border-b border-gray-50 mb-1 high-contrast:border-gray-800">
+                      <p className="text-xs text-gray-400 font-bold uppercase tracking-wider high-contrast:text-yellow-400">Signed in as</p>
+                      <p className="text-sm font-bold text-gray-900 truncate high-contrast:text-white">{user.email}</p>
+                    </div>
+                    <button 
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-600 hover:bg-red-50 transition-colors text-left high-contrast:hover:bg-red-900"
+                    >
+                      <LogOut size={16} />
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                <Link to="/login" className="text-gray-700 font-medium hover:text-blue-600 high-contrast:text-white high-contrast:hover:text-yellow-400">
+                  Login
+                </Link>
+                <Link 
+                  to="/signup" 
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full font-bold transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 high-contrast:bg-yellow-400 high-contrast:text-black"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -90,7 +150,7 @@ const Navbar = () => {
       {isMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-100 absolute w-full high-contrast:bg-black high-contrast:border-gray-800">
           <div className="px-4 pt-4 pb-6 space-y-2">
-            {navLinks.map((link) => (
+            {!isAdmin && navLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.path}
@@ -101,6 +161,18 @@ const Navbar = () => {
               </a>
             ))}
             <div className="pt-4 flex flex-col gap-3">
+               {user && (
+                 <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg high-contrast:bg-gray-900 high-contrast:border high-contrast:border-yellow-400">
+                    <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold high-contrast:bg-yellow-400 high-contrast:text-black">
+                      {user.name?.charAt(0)}
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-bold text-gray-900 high-contrast:text-white">{user.name}</p>
+                      <p className="text-xs text-gray-500 high-contrast:text-gray-400 capitalize">{user.role}</p>
+                    </div>
+                 </div>
+               )}
+
                <div className="flex items-center gap-4 justify-center py-2">
                   <button onClick={toggleContrast} className="flex items-center gap-2 text-gray-600 high-contrast:text-yellow-400">
                     {highContrast ? <Sun size={20} /> : <Moon size={20} />} 
@@ -111,20 +183,41 @@ const Navbar = () => {
                     <span>Font Size</span>
                   </button>
                </div>
-               <Link 
-                to="/login"
-                className="block w-full text-center px-4 py-3 border border-gray-300 rounded-lg text-gray-700 font-bold hover:bg-gray-50 high-contrast:text-white high-contrast:border-white"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Login
-              </Link>
-              <Link 
-                to="/signup"
-                className="block w-full text-center px-4 py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 high-contrast:bg-yellow-400 high-contrast:text-black"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Sign Up
-              </Link>
+               
+               {user ? (
+                 <>
+                  <Link 
+                    to={getDashboardPath()}
+                    className="block w-full text-center px-4 py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 high-contrast:bg-yellow-400 high-contrast:text-black"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Go to Dashboard
+                  </Link>
+                  <button 
+                    onClick={handleLogout}
+                    className="block w-full text-center px-4 py-3 border border-red-200 text-red-600 rounded-lg font-bold hover:bg-red-50 high-contrast:border-red-500"
+                  >
+                    Logout
+                  </button>
+                 </>
+               ) : (
+                 <>
+                  <Link 
+                    to="/login"
+                    className="block w-full text-center px-4 py-3 border border-gray-300 rounded-lg text-gray-700 font-bold hover:bg-gray-50 high-contrast:text-white high-contrast:border-white"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Login
+                  </Link>
+                  <Link 
+                    to="/signup"
+                    className="block w-full text-center px-4 py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 high-contrast:bg-yellow-400 high-contrast:text-black"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Sign Up
+                  </Link>
+                 </>
+               )}
             </div>
           </div>
         </div>
