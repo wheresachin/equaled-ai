@@ -21,7 +21,8 @@ const speakText = (text, onEnd) => {
   if (!window.speechSynthesis) { onEnd?.(); return; }
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang  = 'en-US';
+  const isHindi = /[\u0900-\u097F]/.test(text);
+  utterance.lang  = isHindi ? 'hi-IN' : 'en-US';
   utterance.rate  = 1.15;
   utterance.pitch = 1.0;
   utterance.onend = () => onEnd?.();
@@ -116,7 +117,7 @@ const TalkToAI = () => {
     if (!SpeechRecognition || isListening.current) return;
 
     const rec = new SpeechRecognition();
-    rec.lang           = 'en-US';
+    rec.lang           = 'hi-IN';
     rec.interimResults = true;
     rec.continuous     = false; // One utterance at a time
 

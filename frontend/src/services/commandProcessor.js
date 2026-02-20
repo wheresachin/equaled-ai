@@ -11,6 +11,7 @@ export const INTENTS = {
   NAVIGATE_DASHBOARD:     'NAVIGATE_DASHBOARD',
   NAVIGATE_LESSONS:       'NAVIGATE_LESSONS',
   NAVIGATE_LOGIN:         'NAVIGATE_LOGIN',
+  NAVIGATE_TALK_TO_AI:    'NAVIGATE_TALK_TO_AI',
   NAVIGATE_BACK:          'NAVIGATE_BACK',
   ENABLE_EYE_TRACKER:     'ENABLE_EYE_TRACKER',
   DISABLE_EYE_TRACKER:    'DISABLE_EYE_TRACKER',
@@ -63,6 +64,10 @@ export const COMMAND_MAP = {
   [INTENTS.NAVIGATE_LOGIN]: [
     'login', 'log in', 'sign in', 'signin', 'sign-in', 'login karo', 'open login', 'go to login', 
     'लॉगिन', 'लॉग इन', 'लॉगिन पेज खोलो', 'sign in page',
+  ],
+  [INTENTS.NAVIGATE_TALK_TO_AI]: [
+    'talk to ai', 'ai assistant', 'open ai', 'ai se baat karo', 'open talk to ai', 'start ai',
+    'एआई से बात करो', 'एआई असिस्टेंट', 'बात करो एआई से', 'ask ai', 'ai page'
   ],
   [INTENTS.NAVIGATE_BACK]: [
     'go back', 'back jao', 'wapis jao', 'previous page', 'pichhe jao',
@@ -238,6 +243,7 @@ export const FEEDBACK = {
   [INTENTS.NAVIGATE_DASHBOARD]:   { en: 'Opening Dashboard',          hi: 'डैशबोर्ड खोल रहा हूँ...' },
   [INTENTS.NAVIGATE_LESSONS]:     { en: 'Opening Lessons',            hi: 'पाठ खोल रहा हूँ...' },
   [INTENTS.NAVIGATE_LOGIN]:       { en: 'Going to Login page',        hi: 'लॉगिन पेज खोल रहा हूँ...' },
+  [INTENTS.NAVIGATE_TALK_TO_AI]:  { en: 'Opening AI Assistant',       hi: 'एआई असिस्टेंट खोल रहा हूँ...' },
   [INTENTS.NAVIGATE_BACK]:        { en: 'Going Back',                 hi: 'वापस जा रहा हूँ...' },
   [INTENTS.ENABLE_EYE_TRACKER]:   { en: 'Eye Tracker enabled',        hi: 'आई ट्रैकर चालू हो रहा है...' },
   [INTENTS.DISABLE_EYE_TRACKER]:  { en: 'Eye Tracker disabled',       hi: 'आई ट्रैकर बंद हो रहा है...' },
