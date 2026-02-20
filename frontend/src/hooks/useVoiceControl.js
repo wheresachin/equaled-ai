@@ -84,6 +84,7 @@ export const useVoiceControl = ({
       case INTENTS.NAVIGATE_HOME:      navigate('/home'); break;
       case INTENTS.NAVIGATE_DASHBOARD: navigate('/dashboard'); break;
       case INTENTS.NAVIGATE_LESSONS:   navigate('/lesson/1'); break;
+      case INTENTS.NAVIGATE_LOGIN:     navigate('/login'); break;
       case INTENTS.NAVIGATE_BACK:      window.history.back(); break;
 
       // ── Font ──

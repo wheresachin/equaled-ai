@@ -73,10 +73,10 @@ const HandTrackingActivator = () => {
   return null;
 };
 
-// Voice Assistant Activator — student only
+// Voice Assistant Activator — student only OR unauthenticated (for login command)
 const VoiceAssistantActivator = () => {
   const { user } = useAuth();
-  if (user?.role !== 'student') return null;
+  if (user && user.role !== 'student') return null;
   return <VoiceAssistant />;
 };
 
