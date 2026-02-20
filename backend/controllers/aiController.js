@@ -18,7 +18,13 @@ const chatWithAI = async (req, res) => {
     }
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const modelsToTry = ['gemini-1.5-flash', 'gemini-1.5-flash-latest', 'gemini-pro'];
+    const modelsToTry = [
+      'gemini-2.5-flash',
+      'gemini-2.0-flash', 
+      'gemini-1.5-flash', 
+      'gemini-1.5-flash-latest', 
+      'gemini-pro'
+    ];
     let reply = '';
     let lastError = null;
 
