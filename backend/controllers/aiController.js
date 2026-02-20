@@ -18,17 +18,35 @@ const chatWithAI = async (req, res) => {
     }
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const modelsToTry = ['gemini-1.5-flash', 'gemini-1.5-flash-latest', 'gemini-pro'];
+    let reply = '';
+    let lastError = null;
 
-    // Embed system instruction inside the prompt for maximum compatibility
-    const prompt = `You are an inclusive educational assistant for students with disabilities. Explain clearly and simply. Keep answers to 2-4 sentences. Be warm and encouraging.\n\nStudent asks: ${message.trim()}`;
+    for (const modelName of modelsToTry) {
+      try {
+        const model = genAI.getGenerativeModel({ model: modelName });
+        const prompt = `You are an inclusive educational assistant for students with disabilities. Explain clearly and simply. Keep answers to 2-4 sentences. Be warm and encouraging.\n\nStudent asks: ${message.trim()}`;
+        
+        const result = await model.generateContent(prompt);
+        reply = result.response.text();
+        if (reply) break; 
+      } catch (err) {
+        console.error(`[AI] Failed with ${modelName}:`, err.message || err);
+        lastError = err;
+        // If it's not a 404/model error (e.g. quota, auth), don't bother trying other models
+        if (!err.message?.includes('404') && !err.message?.includes('not found')) {
+          break;
+        }
+      }
+    }
 
-    const result = await model.generateContent(prompt);
-    const reply = result.response.text();
+    if (!reply) {
+      throw lastError || new Error('All AI models failed to respond.');
+    }
 
     res.json({ reply });
   } catch (error) {
-    console.error('[AI] Gemini error:', error?.message || error);
+    console.error('[AI] Final Gemini error:', error?.message || error);
     res.status(500).json({
       message: 'AI is not available right now. Please try again.',
       error: error?.message || (error && error.toString ? error.toString() : 'Unknown error'),
