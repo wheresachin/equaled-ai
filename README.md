@@ -74,6 +74,6 @@ EqualEd bridges the educational accessibility gap by integrating cutting-edge as
 ## 👥 Contributors
 
 - **Sachin Kumar**
-- **Rajiya Kumari**
-- **Raunak Azim**
-- **Anita Kumari**
+- ****
+- ****
+- ****

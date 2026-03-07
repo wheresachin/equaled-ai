@@ -1,7 +1,3 @@
-/**
- * emailService.js
- * Sends transactional emails via Brevo (Sendinblue) SMTP using Nodemailer.
- */
 const nodemailer = require('nodemailer');
 
 const createTransporter = () =>

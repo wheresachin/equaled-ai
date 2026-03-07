@@ -42,11 +42,9 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
-            <div className="bg-blue-600 p-2 rounded-lg high-contrast:bg-yellow-400">
-              <span className="text-white font-bold text-xl high-contrast:text-black">Eq</span>
-            </div>
-            <span className="text-2xl font-bold text-gray-900 high-contrast:text-yellow-400">EqualEd</span>
+          <Link to="/" className="flex items-center">
+            <img src="/logo.png" alt="EqualEd Logo" className="h-24 w-24 object-contain" />
+            <span className="text-3xl font-extrabold text-gray-900 high-contrast:text-yellow-400 -ml-3">EqualEd</span>
           </Link>
 
           {/* Desktop Navigation - Hidden for Admin */}
