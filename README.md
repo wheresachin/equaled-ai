@@ -4,18 +4,16 @@ EqualEd is an inclusive and highly accessible educational platform designed to e
 
 ## 🚨 Problem Statement
 
-EqualEd addresses the critical challenges in educational accessibility:
+- **Websites don't work for disabled students**: Most education websites only use keyboard and mouse. Blind or disabled students cannot use voice or eye tracking.
 
-- **Physical Disabilities**: Students with mobility issues cannot easily navigate traditional websites and online learning platforms
-- **Voice Control Limitations**: Lack of reliable voice command systems makes it difficult for physically disabled students to interact with content
-- **Eye Tracking Absence**: Students unable to use a mouse or keyboard need alternative input methods like eye tracking
-- **Hand Tracking Gap**: Hand gesture recognition features are missing for students who prefer gesture-based interaction
-- **Language Barriers**: Limited support for multiple languages and dialects (e.g., Hindi/Hinglish) excludes bilingual learners
-- **Teacher Management Issues**: Teachers lack tools to efficiently track individual student progress, identify learning gaps, and provide timely interventions
-- **Personalization Deficit**: One-size-fits-all teaching approach doesn't account for diverse learning needs and paces
-- **AI Integration Scarcity**: Limited use of AI-powered learning assistance for personalized tutoring and content generation
-- **Accessibility Compliance**: Many platforms fail to meet WCAG accessibility standards and don't consider inclusive design
-- **Real-time Monitoring**: Teachers cannot track student performance in real-time or adapt lessons based on live feedback
+- **Disabled students quit school**: Without proper tools, disabled students feel left out and stop learning.
+
+- **Only English is available**: Indian students who speak Hindi or Hinglish cannot use these websites properly.
+
+- **Teachers cannot see student progress quickly**: Teachers have no easy way to see which students are struggling or doing well right now.
+
+- **All students learn at the same speed**: Fast learners get bored. Slow learners fall behind. No app changes lessons based on each student.
+
 
 ## 💡 The Solution
 
@@ -100,22 +98,6 @@ The backend provides a RESTful API with the following endpoints:
   - Canvas API (Eye tracking, Hand tracking visualization)
   - getUserMedia API (Camera access)
 
-## 💡 Suggested Improvements
-
-- **Real-time Notifications**: Add WebSocket support for instant notifications when teachers provide feedback or assign tasks
-- **Progress Analytics**: Create detailed dashboard with charts and graphs showing student learning trends
-- **Offline Mode**: Enable offline lesson access with sync when connection restores
-- **Mobile App**: Develop native mobile apps (iOS/Android) for better accessibility on smartphones
-- **Content Library**: Build a public repository of pre-made lessons and quizzes for teachers to reuse
-- **Gamification**: Add points, badges, and leaderboards to increase student engagement
-- **Video Lessons**: Support video upload and streaming for multimedia learning experiences
-- **Better Error Handling**: Implement comprehensive error logging and user-friendly error messages across the app
-- **API Documentation**: Generate interactive API docs using Swagger/OpenAPI
-- **Testing Coverage**: Add unit tests and integration tests for critical features
-- **Performance Optimization**: Implement caching strategies and database query optimization
-- **Accessibility Audit**: Conduct WCAG compliance audit and fix accessibility issues
-- **Rate Limiting**: Add API rate limiting to prevent abuse
-- **Export Features**: Allow teachers to export progress reports as PDF
 
 ## �🚀 How to Run It
 
@@ -173,7 +155,7 @@ The backend provides a RESTful API with the following endpoints:
 - **Sachin Kumar** - Backend & Database Architecture
 - **Ashwani Mishra** - Frontend & UI Components  
 - **Aditya Singh** - AI Integration & Voice Features
-- [Add your name here]
+
 
 ## 📝 License
 
