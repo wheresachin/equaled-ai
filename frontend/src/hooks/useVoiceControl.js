@@ -15,7 +15,7 @@ const SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition;
 
 const SEAMLESS_RESTART_DELAY = 50;  // Minimal flicker
-const COMMAND_COOLDOWN       = 1500; // Increased to prevent double-firings since we execute on interim
+const COMMAND_COOLDOWN = 1500; // Increased to prevent double-firings since we execute on interim
 
 export const useVoiceControl = ({
   enabled,
@@ -27,14 +27,14 @@ export const useVoiceControl = ({
 }) => {
   const { isAwake, setIsAwake } = accessibility;
   const [supported] = useState(() => !!SpeechRecognition);
-  const [permDenied, setPermDenied]   = useState(false);
-  
+  const [permDenied, setPermDenied] = useState(false);
+
   const recognitionRef = useRef(null);
-  const restartTimer   = useRef(null);
-  const isRunning      = useRef(false);
+  const restartTimer = useRef(null);
+  const isRunning = useRef(false);
   const shouldBeRunning = useRef(enabled);
-  const lastCommandAt  = useRef(0);
-  const navigate       = useNavigate();
+  const lastCommandAt = useRef(0);
+  const navigate = useNavigate();
 
   // ── Stable Refs (Critical for prevent rerender loops) ──────────────
   const isAwakeRef = useRef(isAwake);
@@ -60,7 +60,7 @@ export const useVoiceControl = ({
   const executeIntent = useCallback((intent, rawLang) => {
     const feedbackLang = rawLang?.startsWith('hi') ? 'hi' : 'en';
     const acc = accRef.current;
-    
+
     if (!isAwakeRef.current && intent !== INTENTS.ENABLE_VOICE) return;
 
     const msg = getFeedback(intent, feedbackLang);
@@ -81,28 +81,28 @@ export const useVoiceControl = ({
         return;
 
       // ── Navigation ──
-      case INTENTS.NAVIGATE_HOME:      navigate('/home'); break;
+      case INTENTS.NAVIGATE_HOME: navigate('/home'); break;
       case INTENTS.NAVIGATE_DASHBOARD: navigate('/dashboard'); break;
-      case INTENTS.NAVIGATE_LESSONS:   navigate('/lesson/1'); break;
-      case INTENTS.NAVIGATE_LOGIN:     navigate('/login'); break;
-      case INTENTS.NAVIGATE_TALK_TO_AI:navigate('/talk-to-ai'); break;
-      case INTENTS.NAVIGATE_BACK:      window.history.back(); break;
+      case INTENTS.NAVIGATE_LESSONS: navigate('/lesson/1'); break;
+      case INTENTS.NAVIGATE_LOGIN: navigate('/login'); break;
+      case INTENTS.NAVIGATE_TALK_TO_AI: navigate('/talk-to-ai'); break;
+      case INTENTS.NAVIGATE_BACK: window.history.back(); break;
 
       // ── Font ──
       case INTENTS.INCREASE_FONT: acc.increaseFont?.(); break;
       case INTENTS.DECREASE_FONT: acc.decreaseFont?.(); break;
 
       // ── High Contrast ──
-      case INTENTS.ENABLE_CONTRAST:  if (!acc.highContrast)  acc.toggleContrast?.(); break;
-      case INTENTS.DISABLE_CONTRAST: if (acc.highContrast)   acc.toggleContrast?.(); break;
+      case INTENTS.ENABLE_CONTRAST: if (!acc.highContrast) acc.toggleContrast?.(); break;
+      case INTENTS.DISABLE_CONTRAST: if (acc.highContrast) acc.toggleContrast?.(); break;
 
       // ── Captions ──
-      case INTENTS.ENABLE_CAPTIONS:  if (!acc.captionsEnabled) acc.toggleCaptions?.(); break;
-      case INTENTS.DISABLE_CAPTIONS: if (acc.captionsEnabled)  acc.toggleCaptions?.(); break;
+      case INTENTS.ENABLE_CAPTIONS: if (!acc.captionsEnabled) acc.toggleCaptions?.(); break;
+      case INTENTS.DISABLE_CAPTIONS: if (acc.captionsEnabled) acc.toggleCaptions?.(); break;
 
       // ── Focus Mode ──
-      case INTENTS.ENABLE_FOCUS:  if (!acc.focusMode) acc.toggleFocusMode?.(); break;
-      case INTENTS.DISABLE_FOCUS: if (acc.focusMode)  acc.toggleFocusMode?.(); break;
+      case INTENTS.ENABLE_FOCUS: if (!acc.focusMode) acc.toggleFocusMode?.(); break;
+      case INTENTS.DISABLE_FOCUS: if (acc.focusMode) acc.toggleFocusMode?.(); break;
 
       // ── Eye Tracker ──
       case INTENTS.ENABLE_EYE_TRACKER:
@@ -127,15 +127,15 @@ export const useVoiceControl = ({
         break;
 
       // ── Scroll ──
-      case INTENTS.SCROLL_UP:   window.scrollBy({ top: -400, behavior: 'smooth' }); break;
-      case INTENTS.SCROLL_DOWN: window.scrollBy({ top: 400,  behavior: 'smooth' }); break;
+      case INTENTS.SCROLL_UP: window.scrollBy({ top: -400, behavior: 'smooth' }); break;
+      case INTENTS.SCROLL_DOWN: window.scrollBy({ top: 400, behavior: 'smooth' }); break;
 
       // ── Disability Modes ──
-      case INTENTS.SET_VISUAL_MODE:       acc.setDisabilityType?.('visual');    break;
-      case INTENTS.SET_HEARING_MODE:      acc.setDisabilityType?.('hearing');   break;
-      case INTENTS.SET_MOTOR_MODE:        acc.setDisabilityType?.('motor');     break;
-      case INTENTS.SET_COGNITIVE_MODE:    acc.setDisabilityType?.('cognitive'); break;
-      case INTENTS.RESET_DISABILITY_MODE: acc.setDisabilityType?.('none');      break;
+      case INTENTS.SET_VISUAL_MODE: acc.setDisabilityType?.('visual'); break;
+      case INTENTS.SET_HEARING_MODE: acc.setDisabilityType?.('hearing'); break;
+      case INTENTS.SET_MOTOR_MODE: acc.setDisabilityType?.('motor'); break;
+      case INTENTS.SET_COGNITIVE_MODE: acc.setDisabilityType?.('cognitive'); break;
+      case INTENTS.RESET_DISABILITY_MODE: acc.setDisabilityType?.('none'); break;
 
       default: break;
     }
@@ -154,9 +154,9 @@ export const useVoiceControl = ({
 
     console.log('[Voice] Initializing new session...');
     const rec = new SpeechRecognition();
-    rec.continuous     = true;
+    rec.continuous = true;
     rec.interimResults = true;
-    rec.lang           = langRef.current;
+    rec.lang = langRef.current;
 
     rec.onstart = () => {
       console.log('[Voice] Mic Listening...');
@@ -168,7 +168,7 @@ export const useVoiceControl = ({
       console.log('[Voice] Session ended.');
       isRunning.current = false;
       onListeningRef.current?.(false);
-      
+
       if (shouldBeRunning.current && !permDenied) {
         clearTimeout(restartTimer.current);
         restartTimer.current = setTimeout(() => {
@@ -177,8 +177,10 @@ export const useVoiceControl = ({
             startRecognition();
           } else if (window.speechSynthesis.speaking) {
             // Polling for TTS end
+            let attempts = 0;
             const poll = setInterval(() => {
-              if (!window.speechSynthesis.speaking) {
+              attempts++;
+              if (!window.speechSynthesis.speaking || attempts > 15) { // max wait 7.5s
                 clearInterval(poll);
                 startRecognition();
               }
@@ -199,10 +201,10 @@ export const useVoiceControl = ({
 
     rec.onresult = (event) => {
       const results = Array.from(event.results);
-      const latest  = results[results.length - 1];
-      const text    = latest[0].transcript;
+      const latest = results[results.length - 1];
+      const text = latest[0].transcript;
       const isInterim = !latest.isFinal;
-      
+
       onTranscriptRef.current?.(text, isInterim);
 
       const now = Date.now();
@@ -212,7 +214,7 @@ export const useVoiceControl = ({
       if (isInterim) {
         const intent = processCommand(text);
         if (!intent) return;
-        
+
         if (intent === INTENTS.ENABLE_VOICE && !isAwakeRef.current) {
           lastCommandAt.current = now;
           executeIntentRef.current?.(intent, langRef.current);
@@ -257,8 +259,8 @@ export const useVoiceControl = ({
     if (recognitionRef.current) {
       try {
         recognitionRef.current.onend = null;
-        recognitionRef.current.abort(); 
-      } catch (e) {}
+        recognitionRef.current.abort();
+      } catch (e) { }
       recognitionRef.current = null;
     }
     isRunning.current = false;
@@ -280,7 +282,7 @@ export const useVoiceControl = ({
   useEffect(() => {
     const onSTTStart = () => {
       if (isRunning.current) {
-        try { recognitionRef.current?.abort(); } catch (e) {}
+        try { recognitionRef.current?.abort(); } catch (e) { }
         isRunning.current = false;
       }
     };
@@ -290,10 +292,10 @@ export const useVoiceControl = ({
       }
     };
     window.addEventListener('equaled:stt-start', onSTTStart);
-    window.addEventListener('equaled:stt-end',   onSTTEnd);
+    window.addEventListener('equaled:stt-end', onSTTEnd);
     return () => {
       window.removeEventListener('equaled:stt-start', onSTTStart);
-      window.removeEventListener('equaled:stt-end',   onSTTEnd);
+      window.removeEventListener('equaled:stt-end', onSTTEnd);
     };
   }, [startRecognition, permDenied]);
 

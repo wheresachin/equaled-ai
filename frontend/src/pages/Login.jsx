@@ -22,6 +22,7 @@ const Login = () => {
     setError('');
     setLoading(true);
     setSlowWarn(false);
+    const normalizedEmail = email.trim().toLowerCase();
 
     // Show "server waking up" warning after 4s
     const slowTimer = setTimeout(() => setSlowWarn(true), 4000);
@@ -30,7 +31,7 @@ const Login = () => {
       const res = await fetch(`${API_BASE}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: normalizedEmail, password }),
       });
       const data = await res.json();
       if (res.ok) {

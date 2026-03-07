@@ -30,6 +30,7 @@ const Signup = () => {
     try {
       const payload = {
         ...formData,
+        email: formData.email.trim().toLowerCase(),
         disabilityType: formData.disabilityType || 'none', // default to 'none' if empty
       };
 

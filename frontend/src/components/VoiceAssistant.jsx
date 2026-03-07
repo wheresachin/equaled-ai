@@ -17,8 +17,8 @@ const Toast = ({ msg, type }) => {
   if (!msg) return null;
   const colors = {
     success: 'bg-green-600',
-    error:   'bg-red-500',
-    info:    'bg-blue-500',
+    error: 'bg-red-500',
+    info: 'bg-blue-500',
   };
   return (
     <div
@@ -56,12 +56,12 @@ const VoiceAssistant = () => {
   const accessibility = useAccessibility();
   const { voiceEnabled, voiceLang, toggleVoice, setVoiceLang, isAwake, highContrast } = accessibility;
 
-  const [listening, setListening]   = useState(false);
+  const [listening, setListening] = useState(false);
   const [transcript, setTranscript] = useState('');
-  const [interim, setInterim]       = useState(false);
-  const [feedback, setFeedback]     = useState({ msg: '', type: 'success' });
+  const [interim, setInterim] = useState(false);
+  const [feedback, setFeedback] = useState({ msg: '', type: 'success' });
   const [showLangMenu, setShowLangMenu] = useState(false);
-  const [showHelp, setShowHelp]     = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
 
   // ── Drag Logic State ──────────────────────────────────────────────
   const [position, setPosition] = useState(() => {
@@ -69,8 +69,8 @@ const VoiceAssistant = () => {
     return saved ? JSON.parse(saved) : { x: window.innerWidth * 0.23, y: window.innerHeight - 80 };
   });
   const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart]   = useState({ x: 0, y: 0 });
-  const [moved, setMoved]           = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [moved, setMoved] = useState(false);
 
   // Clear transcript after 5s
   useEffect(() => {
@@ -122,7 +122,7 @@ const VoiceAssistant = () => {
 
   const onPointerMove = (e) => {
     if (!isDragging) return;
-    
+
     const newX = e.clientX - dragStart.x;
     const newY = e.clientY - dragStart.y;
 
@@ -147,17 +147,24 @@ const VoiceAssistant = () => {
   const handleToggle = (e) => {
     // Only toggle if we didn't move significantly (it's a click, not a drag)
     if (!moved) {
-      toggleVoice(e);
+      if (!voiceEnabled) {
+        toggleVoice();
+        setTimeout(() => setIsAwake(true), 100);
+      } else if (isAwake) {
+        setIsAwake(false);
+      } else {
+        setIsAwake(true);
+      }
     }
   };
 
   const { supported, permDenied } = useVoiceControl({
-    enabled:      voiceEnabled,
-    lang:         voiceLang,
+    enabled: voiceEnabled,
+    lang: voiceLang,
     accessibility,
     onTranscript: handleTranscript,
-    onFeedback:   handleFeedback,
-    onListening:  handleListening,
+    onFeedback: handleFeedback,
+    onListening: handleListening,
   });
 
   if (!supported) return null;
@@ -210,10 +217,10 @@ const VoiceAssistant = () => {
       )}
 
       {/* Mic button group - Draggable Container */}
-      <div 
+      <div
         className={`fixed z-[999998] flex flex-col items-center gap-2 transition-transform duration-75 ${isDragging ? 'scale-105 opacity-90 cursor-grabbing' : 'cursor-grab'}`}
-        style={{ 
-          left: position.x, 
+        style={{
+          left: position.x,
           top: position.y,
           transform: 'translate(-50%, -50%)',
           touchAction: 'none' // Prevent scrolling while dragging
@@ -222,7 +229,7 @@ const VoiceAssistant = () => {
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
       >
-        
+
         {/* Language Switcher Overlay */}
         {showLangMenu && (
           <div className="absolute bottom-24 bg-white/95 backdrop-blur border border-gray-100 p-2 rounded-2xl shadow-2xl flex flex-col gap-1 w-32 animate-in slide-in-from-bottom-2 fade-in">
@@ -231,9 +238,8 @@ const VoiceAssistant = () => {
                 key={l.code}
                 onClick={(e) => { e.stopPropagation(); setVoiceLang(l.code); setShowLangMenu(false); }}
                 onPointerDown={(e) => e.stopPropagation()} // Prevent drag start when clicking menu
-                className={`text-left px-3 py-2 rounded-xl text-xs font-bold transition-all ${
-                  voiceLang === l.code ? 'bg-indigo-600 text-white' : 'hover:bg-gray-100 text-gray-600'
-                }`}
+                className={`text-left px-3 py-2 rounded-xl text-xs font-bold transition-all ${voiceLang === l.code ? 'bg-indigo-600 text-white' : 'hover:bg-gray-100 text-gray-600'
+                  }`}
               >
                 {l.label}
               </button>
@@ -292,16 +298,16 @@ const VoiceAssistant = () => {
 
         {/* Small Status Pill */}
         <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border shadow-sm
-          ${ permDenied  ? 'bg-red-50 text-red-500 border-red-100' :
-             isAwake     ? 'bg-indigo-600 text-white border-indigo-500' :
-             listening   ? 'bg-blue-50 text-blue-500 border-blue-100' :
-                           'bg-white text-gray-400 border-gray-100'}`}
+          ${permDenied ? 'bg-red-50 text-red-500 border-red-100' :
+            isAwake ? 'bg-indigo-600 text-white border-indigo-500' :
+              listening ? 'bg-blue-50 text-blue-500 border-blue-100' :
+                'bg-white text-gray-400 border-gray-100'}`}
         >
-          {permDenied   ? '🚫 No Mic' :
-           isAwake      ? 'Active' :
-           listening    ? 'Listening...' :
-           voiceEnabled ? 'Ready' :
-                          'Deactivated'}
+          {permDenied ? '🚫 No Mic' :
+            isAwake ? 'Active' :
+              listening ? 'Listening...' :
+                voiceEnabled ? 'Ready' :
+                  'Deactivated'}
         </span>
       </div>
     </>

@@ -15,7 +15,6 @@ const STATE = {
 const SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition;
 
-// ── Helper: speak text aloud ───────────────────────────────────────────────
 const speakText = (text, onEnd) => {
   if (!window.speechSynthesis) { onEnd?.(); return; }
   window.speechSynthesis.cancel();
@@ -24,12 +23,49 @@ const speakText = (text, onEnd) => {
   utterance.lang  = isHindi ? 'hi-IN' : 'en-US';
   utterance.rate  = 1.15;
   utterance.pitch = 1.0;
-  utterance.onend = () => onEnd?.();
-  utterance.onerror = () => onEnd?.();
-  window.speechSynthesis.speak(utterance);
+  
+  ensureVoicesLoaded(() => {
+    const voices = window.speechSynthesis.getVoices();
+    if (isHindi) {
+      const hindiVoices = voices.filter(v => v.lang.includes('hi') || v.lang.includes('Hindi'));
+      let selectedVoice = hindiVoices.find(v => 
+        v.name.toLowerCase().includes('male') || 
+        v.name.toLowerCase().includes('rishi') || 
+        v.name.toLowerCase().includes('amit')
+      ) || hindiVoices[0];
+      if (selectedVoice) utterance.voice = selectedVoice;
+    } else {
+      const engVoices = voices.filter(v => v.lang.includes('en'));
+      let selectedVoice = engVoices.find(v => 
+        v.name.toLowerCase().includes('male') || 
+        v.name.toLowerCase().includes('david') || 
+        v.name.toLowerCase().includes('mark') ||
+        v.name.toLowerCase().includes('guy') ||
+        v.name.toLowerCase().includes('brian') ||
+        v.name.toLowerCase().includes('daniel') ||
+        v.name.toLowerCase().includes('gemini') ||
+        v.name.toLowerCase().includes('google uk english male')
+      ) || engVoices[0];
+      if (selectedVoice) utterance.voice = selectedVoice;
+    }
+
+    utterance.onend = () => onEnd?.();
+    utterance.onerror = () => onEnd?.();
+    window.speechSynthesis.speak(utterance);
+  });
 };
 
-// ── Conversation bubble ────────────────────────────────────────────────────
+const ensureVoicesLoaded = (callback) => {
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length > 0) {
+    callback();
+  } else {
+    window.speechSynthesis.onvoiceschanged = () => {
+      window.speechSynthesis.onvoiceschanged = null;
+      callback();
+    };
+  }
+};
 const Bubble = ({ role, text }) => (
   <div className={`flex ${role === 'user' ? 'justify-end' : 'justify-start'} mb-3`}>
     <div
@@ -126,6 +162,7 @@ const TalkToAI = () => {
       isListening.current = true;
       setAppState(STATE.LISTENING);
       setErrorMsg('');
+      window.dispatchEvent(new Event('equaled:stt-start'));
     };
 
     rec.onresult = (e) => {
@@ -142,6 +179,7 @@ const TalkToAI = () => {
     rec.onerror = (e) => {
       console.warn('[TalkToAI] Mic error:', e.error);
       isListening.current = false;
+      window.dispatchEvent(new Event('equaled:stt-end'));
       if (e.error === 'not-allowed') {
         setErrorMsg('Microphone permission denied. Allow mic access in your browser.');
       }
@@ -150,6 +188,7 @@ const TalkToAI = () => {
 
     rec.onend = () => {
       isListening.current = false;
+      window.dispatchEvent(new Event('equaled:stt-end'));
     };
 
     recognitionRef.current = rec;
@@ -164,6 +203,7 @@ const TalkToAI = () => {
     }
     window.speechSynthesis.cancel();
     isListening.current = false;
+    window.dispatchEvent(new Event('equaled:stt-end'));
     setAppState(STATE.IDLE);
     setInterimText('');
   }, []);
