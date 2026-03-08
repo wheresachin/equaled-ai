@@ -5,15 +5,17 @@
 The platform provides assistive tools such as voice commands, text-to-speech, speech-to-text, captions, and adaptive learning modes to help students learn more easily.
 
 ## Features ✨
-
-*   **Dashboards for Everyone**: Separate, easy-to-use dashboards for Students, Teachers, and Admins.
-*   **Accessibility First**: 
-    *   **Voice Assistant**: Control the platform using your voice.
-    *   **Eye Tracking**: Hands-free navigation using your eyes (optimized for students).
-    *   **Hand Tracking**: Control the application using hand gestures (optimized for students).
-*   **Lesson & Quiz Management**: Teachers can easily create and manage lessons and quizzes for their students.
-*   **Student Progress Tracking**: Built-in tools for teachers to review student submissions and monitor their learning progress.
-*   **Talk to AI**: Integrated AI learning companion to assist students with their questions.
+*   **Student Assistive Tools**:
+    *   Voice command control for navigation and accessibility features
+    *   Text-to-Speech for students who cannot read text easily
+    *   Speech-to-Text for voice input
+    *   Assistive modes for different needs: Visual mode, Hearing mode, Motor mode, Cognitive mode
+    *   Adjustable text size and High contrast mode
+    *   Focus mode for distraction-free learning
+    *   Captions support and Eye tracking support
+    *   Talk to AI assistant for help and guidance
+*   **Teacher Panel**: Dedicated dashboard for teachers to create lessons, manage quizzes, review student submissions, and track class progress.
+*   **Admin Panel**: Centralized control panel for administrators to manage users (students and teachers) and oversee platform activities.
 *   **Secure Authentication**: Safe login, signup, and password recovery.
 *   **Interactive UI**: Clean, responsive, and mobile-friendly design.
 
@@ -69,3 +71,5 @@ Make sure you have [Node.js](https://nodejs.org/) installed on your computer.
 We welcome contributions! Feel free to open issues or submit pull requests to help make EqualEd even more accessible and better for everyone.
 
 ## License 📄
+MIT License - free to use, modify, and distribute.
+
