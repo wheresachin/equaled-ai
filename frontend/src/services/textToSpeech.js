@@ -1,86 +1,138 @@
-let _cachedVoices = [];
+/**
+ * Sarvam AI Text-to-Speech service
+ *
+ * Calls the backend proxy at /api/ai/tts, which forwards to Sarvam's
+ * https://api.sarvam.ai/text-to-speech endpoint.
+ * The response is a base64-encoded WAV string that we decode and play
+ * via the Web Audio API so it works across all browsers without issues.
+ */
 
-const loadVoices = () =>
-  new Promise((resolve) => {
-    const voices = window.speechSynthesis.getVoices();
-    if (voices.length > 0) {
-      _cachedVoices = voices;
-      return resolve(voices);
-    }
-    
-    const handler = () => {
-      _cachedVoices = window.speechSynthesis.getVoices();
-      resolve(_cachedVoices);
-    };
-    window.speechSynthesis.onvoiceschanged = handler;
-    
-    setTimeout(() => {
-      if (_cachedVoices.length === 0) {
-        _cachedVoices = window.speechSynthesis.getVoices();
-        resolve(_cachedVoices);
-      }
-    }, 2000);
-  });
+import API_BASE from '../utils/api';
 
-const pickVoice = (voices, lang) => {
-  if (lang.startsWith('hi')) {
-    const hindi = voices.filter(v => v.lang.startsWith('hi'));
-    return (
-      hindi.find(v =>
-        ['male', 'rishi', 'amit'].some(k => v.name.toLowerCase().includes(k))
-      ) || hindi[0] || null
-    );
+const getToken = () => {
+  try {
+    const stored = localStorage.getItem('user');
+    return stored ? JSON.parse(stored)?.token : null;
+  } catch {
+    return null;
   }
-  const english = voices.filter(v => v.lang.startsWith('en'));
-  return (
-    english.find(v =>
-      ['david', 'mark', 'guy', 'brian', 'daniel', 'male'].some(k =>
-        v.name.toLowerCase().includes(k)
-      )
-    ) || english[0] || null
-  );
 };
 
-export const speak = async (text, lang = 'en-US') => {
-  if (!window.speechSynthesis || !text) return;
+/**
+ * Detect if text is predominantly Hindi/Indic.
+ * Returns 'hi-IN' for Hindi script, 'en-IN' otherwise.
+ */
+const detectLanguage = (text) => {
+  const hindiChars = (text.match(/[\u0900-\u097F]/g) || []).length;
+  return hindiChars > text.length * 0.15 ? 'hi-IN' : 'en-IN';
+};
 
-  
-  window.speechSynthesis.cancel();
+/**
+ * Pick a Sarvam speaker appropriate for the language.
+ * bulbul:v2 speakers:
+ *   Female: anushka, manisha, vidya, arya
+ *   Male:   abhilash, karun, hitesh
+ */
+const pickSarvamSpeaker = (lang) => {
+  return lang === 'hi-IN' ? 'abhilash' : 'karun';
+};
+
+let _audioCtx = null;
+const getAudioCtx = () => {
+  if (!_audioCtx || _audioCtx.state === 'closed') {
+    _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  return _audioCtx;
+};
+
+let _currentSource = null;
+
+/**
+ * Main speak function – calls Sarvam TTS via backend and plays audio.
+ * @param {string} text   Text to speak
+ * @param {string} lang   BCP-47 language code (e.g. 'hi-IN', 'en-IN')
+ * @param {Function} [onEnd]  Called when playback ends
+ */
+export const speak = async (text, lang, onEnd) => {
+  if (!text || !text.trim()) { onEnd?.(); return; }
+
+  const resolvedLang = lang || detectLanguage(text);
+  const speaker = pickSarvamSpeaker(resolvedLang);
+  const token = getToken();
 
   try {
-    
-    const voices = _cachedVoices.length > 0 ? _cachedVoices : await loadVoices();
+    // Stop any currently playing audio
+    stopSpeaking();
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = lang;
-    utterance.rate = 0.92;
-    utterance.pitch = 0.95;
-    utterance.volume = 1.0;
+    const response = await fetch(`${API_BASE}/api/ai/tts`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({
+        text: text.trim(),
+        language_code: resolvedLang,
+        speaker,
+        pace: 1.0,
+      }),
+    });
 
-    const voice = pickVoice(voices, lang);
-    if (voice) utterance.voice = voice;
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.message || 'TTS request failed');
+    }
 
-    
-    const keepAlive = setInterval(() => {
-      if (!window.speechSynthesis.speaking) {
-        clearInterval(keepAlive);
-        return;
-      }
-      window.speechSynthesis.pause();
-      window.speechSynthesis.resume();
-    }, 10000);
+    const data = await response.json();
+    const audioBase64 = data.audio;
+    if (!audioBase64) throw new Error('No audio received');
 
-    utterance.onend = () => clearInterval(keepAlive);
-    utterance.onerror = () => clearInterval(keepAlive);
+    // Decode base64 → ArrayBuffer → AudioBuffer → play
+    const binaryString = atob(audioBase64);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
 
-    window.speechSynthesis.speak(utterance);
+    const ctx = getAudioCtx();
+    if (ctx.state === 'suspended') await ctx.resume();
+
+    const audioBuffer = await ctx.decodeAudioData(bytes.buffer);
+    const source = ctx.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(ctx.destination);
+    _currentSource = source;
+    source.onended = () => {
+      _currentSource = null;
+      onEnd?.();
+    };
+    source.start();
   } catch (err) {
-    console.warn('[TTS] speak error:', err);
+    console.warn('[Sarvam TTS] Error, falling back to Web Speech:', err.message);
+    // Graceful fallback to browser speech synthesis
+    _fallbackSpeak(text, resolvedLang, onEnd);
   }
 };
 
-if (typeof window !== 'undefined' && window.speechSynthesis) {
-  loadVoices();
-}
+/** Fallback to browser speechSynthesis if Sarvam TTS fails */
+const _fallbackSpeak = (text, lang, onEnd) => {
+  if (!window.speechSynthesis) { onEnd?.(); return; }
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = lang || 'en-IN';
+  utterance.rate = 0.95;
+  utterance.onend = () => onEnd?.();
+  utterance.onerror = () => onEnd?.();
+  window.speechSynthesis.speak(utterance);
+};
 
-export const isTTSSupported = () => !!window.speechSynthesis;
+/** Stop any audio currently playing */
+export const stopSpeaking = () => {
+  if (_currentSource) {
+    try { _currentSource.stop(); } catch {}
+    _currentSource = null;
+  }
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+};
+
+export const isTTSSupported = () => true;

@@ -77,7 +77,6 @@ export const useVoiceControl = ({
         return;
 
       
-      
       case INTENTS.NAVIGATE_HOME: navigate(userRef.current ? '/home' : '/'); break;
       case INTENTS.NAVIGATE_DASHBOARD: navigate('/dashboard'); break;
       case INTENTS.NAVIGATE_LESSONS: navigate('/lesson/1'); break;
@@ -143,7 +142,6 @@ export const useVoiceControl = ({
   const executeIntentRef = useRef(executeIntent);
   useEffect(() => { executeIntentRef.current = executeIntent; }, [executeIntent]);
 
-  
   const startRecognition = useCallback(() => {
     if (!supported || permDenied || isRunning.current || !shouldBeRunning.current) {
       return;
@@ -169,19 +167,8 @@ export const useVoiceControl = ({
       if (shouldBeRunning.current && !permDenied) {
         clearTimeout(restartTimer.current);
         restartTimer.current = setTimeout(() => {
-          
-          if (shouldBeRunning.current && !isRunning.current && !window.speechSynthesis.speaking) {
+          if (shouldBeRunning.current && !isRunning.current) {
             startRecognition();
-          } else if (window.speechSynthesis.speaking) {
-            
-            let attempts = 0;
-            const poll = setInterval(() => {
-              attempts++;
-              if (!window.speechSynthesis.speaking || attempts > 15) { 
-                clearInterval(poll);
-                startRecognition();
-              }
-            }, 500);
           }
         }, SEAMLESS_RESTART_DELAY);
       }
@@ -190,21 +177,17 @@ export const useVoiceControl = ({
     rec.onerror = (e) => {
       console.warn('[Voice] Error:', e.error);
       if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
-        
         setPermDenied(true);
         shouldBeRunning.current = false;
         isRunning.current = false;
         onListeningRef.current?.(false);
         onFeedbackRef.current?.('Mic permission denied. Please allow mic access.', 'error');
       } else if (e.error === 'no-speech' || e.error === 'network' || e.error === 'audio-capture') {
-        
         console.log('[Voice] Non-fatal error, restarting...');
         isRunning.current = false;
       } else if (e.error === 'aborted') {
-        
         isRunning.current = false;
       }
-      
     };
 
     rec.onresult = (event) => {
@@ -218,7 +201,6 @@ export const useVoiceControl = ({
       const now = Date.now();
       if (now - lastCommandAt.current < COMMAND_COOLDOWN) return;
 
-      
       if (isInterim) {
         const intent = processCommand(text);
         if (!intent) return;
@@ -285,7 +267,6 @@ export const useVoiceControl = ({
     return () => stopRecognition();
   }, [enabled, supported, permDenied, startRecognition, stopRecognition]);
 
-  
   
   useEffect(() => {
     const onSTTStart = () => {
