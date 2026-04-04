@@ -1,8 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { useAuth } from "./AuthContext";
 
 const AccessibilityContext = createContext();
 
 export const AccessibilityProvider = ({ children }) => {
+  const { user } = useAuth();
   const [disabilityType, setDisabilityType] = useState("none"); 
   const [highContrast, setHighContrast] = useState(false);
   const [fontSize, setFontSize] = useState(16); 
@@ -16,6 +18,11 @@ export const AccessibilityProvider = ({ children }) => {
   const [voiceLang, setVoiceLang] = useState('hi-IN'); 
   const [isAwake, setIsAwake] = useState(false); 
 
+  useEffect(() => {
+    if (user?.role !== "student") return;
+    setDisabilityType(user?.disabilityType || "none");
+  }, [user?.role, user?.disabilityType]);
+
   
   useEffect(() => {
     switch (disabilityType) {
@@ -24,32 +31,50 @@ export const AccessibilityProvider = ({ children }) => {
         setFontSize(24);
         setCaptionsEnabled(false);
         setFocusMode(false);
+        setEyeTrackingEnabled(false);
+        setHandTrackingEnabled(false);
+        setVoiceEnabled(false);
+        setIsAwake(false);
         break;
       case "hearing":
         setCaptionsEnabled(true);
         setHighContrast(false);
         setFontSize(16);
         setFocusMode(false);
+        setEyeTrackingEnabled(false);
+        setHandTrackingEnabled(false);
+        setVoiceEnabled(false);
+        setIsAwake(false);
         break;
       case "motor":
-        
         setFontSize(20);
         setHighContrast(false);
         setCaptionsEnabled(false);
         setFocusMode(false);
+        setEyeTrackingEnabled(false);
+        setHandTrackingEnabled(true);
+        setVoiceEnabled(false);
+        setIsAwake(false);
         break;
       case "cognitive":
         setFocusMode(true);
         setHighContrast(false);
         setFontSize(18);
         setCaptionsEnabled(false);
+        setEyeTrackingEnabled(false);
+        setHandTrackingEnabled(false);
+        setVoiceEnabled(false);
+        setIsAwake(false);
         break;
       default:
-        
         setHighContrast(false);
         setFontSize(16);
         setFocusMode(false);
         setCaptionsEnabled(false);
+        setEyeTrackingEnabled(false);
+        setHandTrackingEnabled(false);
+        setVoiceEnabled(false);
+        setIsAwake(false);
         break;
     }
   }, [disabilityType]);

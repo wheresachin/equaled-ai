@@ -61,7 +61,7 @@ const AccessibilityControls = () => {
 
         {}
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium high-contrast:text-white">Text Size</span>
+          <span className="text-sm font-medium high-contrast:text-white">Font Size</span>
           <div className="flex bg-gray-100 rounded-lg p-1 high-contrast:bg-gray-800">
             <button onClick={decreaseFont} className="p-2 hover:bg-white rounded-md transition-colors high-contrast:text-white high-contrast:hover:bg-gray-700" aria-label="Decrease Font">
               <Type size={14} />
