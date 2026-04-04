@@ -26,6 +26,7 @@ import ManageStudents from './pages/ManageStudents';
 import TalkToAI from './pages/TalkToAI';
 import Home from './pages/Home';
 import ForgotPassword from './pages/ForgotPassword';
+import Api from './pages/Api';
 
 
 const EyeTrackingActivator = () => {
@@ -94,6 +95,7 @@ function App() {
               <VoiceAssistantActivator />
               <Routes>
                 <Route path="/" element={<Landing />} />
+                <Route path="/developers" element={<Api />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />

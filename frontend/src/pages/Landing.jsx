@@ -13,7 +13,7 @@ const Landing = () => {
         <div className="min-h-screen bg-white high-contrast:bg-black font-sans">
             <Navbar />
 
-            {}
+            { }
             <section className="pt-32 pb-20 px-4 max-w-7xl mx-auto text-center relative overflow-hidden">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-blue-50/50 rounded-full blur-3xl -z-10 high-contrast:hidden"></div>
 
@@ -51,7 +51,7 @@ const Landing = () => {
 
             </section>
 
-            {}
+            { }
             <section id="features" className="py-24 bg-gray-50 high-contrast:bg-gray-900">
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="text-center mb-20 max-w-3xl mx-auto">
@@ -68,7 +68,7 @@ const Landing = () => {
                             { icon: Mic, title: "Speech-to-Text", desc: "Dictate answers and notes directly into the platform." },
                             { icon: Globe, title: "Adaptive Interface", desc: "UI that morphs font size, contrast, and layout automatically." },
                             { icon: Eye, title: "Eye Tracking", desc: "Navigate the entire site using only your eyes." },
-                            { icon: Brain, title: "Cognitive Mode", desc: "Simplified layouts and focus tools for ADHD and dyslexia." },
+                            { icon: Brain, title: "Cognitive Mode", desc: "Simplified layouts and focus tools for ADHD." },
                             { icon: MessageSquare, title: "Voice Assistant", desc: "Complex command execution via natural voice conversational AI." }
                         ].map((feature, i) => (
                             <div key={i} className="group p-8 rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 high-contrast:bg-black high-contrast:border-gray-800 high-contrast:hover:border-yellow-400">
@@ -83,7 +83,7 @@ const Landing = () => {
                 </div>
             </section>
 
-            {}
+            { }
             <section id="how-it-works" className="py-24 bg-white high-contrast:bg-black">
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="text-center mb-20">
@@ -93,7 +93,7 @@ const Landing = () => {
                     </div>
 
                     <div className="grid md:grid-cols-4 gap-8 relative">
-                        {}
+                        { }
                         <div className="hidden md:block absolute top-[60px] left-0 w-full h-1 bg-blue-100 high-contrast:bg-gray-800 -z-10"></div>
 
                         {[
@@ -114,7 +114,7 @@ const Landing = () => {
                 </div>
             </section>
 
-            {}
+            { }
             <section id="about" className="py-24 bg-gray-50 high-contrast:bg-black">
                 <div className="max-w-4xl mx-auto px-4 text-center">
                     <h2 className="text-sm font-bold text-blue-600 mb-3 high-contrast:text-yellow-400 uppercase tracking-wider">Our Mission</h2>
@@ -123,7 +123,7 @@ const Landing = () => {
                         EqualEd creates an inclusive learning experience by combining accessibility-first design with intelligent adaptive technology. Our platform ensures that no student is left behind.
                     </p>
 
-                    {}
+                    { }
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-2xl mx-auto">
                         <div className="bg-white rounded-2xl border border-blue-100 shadow-sm p-8 text-left hover:shadow-lg transition-shadow high-contrast:bg-gray-900 high-contrast:border-gray-700">
                             <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mb-5 high-contrast:bg-yellow-400 high-contrast:text-black">
@@ -143,7 +143,7 @@ const Landing = () => {
                 </div>
             </section>
 
-            {}
+            { }
             <section id="contact" className="py-24 bg-blue-50 high-contrast:bg-gray-900 border-t border-gray-200 high-contrast:border-gray-800">
                 <div className="max-w-4xl mx-auto px-4">
                     <div className="bg-white rounded-3xl shadow-xl overflow-hidden high-contrast:bg-black high-contrast:border high-contrast:border-gray-700">

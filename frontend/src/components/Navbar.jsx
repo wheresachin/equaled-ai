@@ -20,6 +20,7 @@ const Navbar = () => {
     { name: 'Features', path: '#features' },
     { name: 'How It Works', path: '#how-it-works' },
     { name: 'Contact', path: '#contact' },
+    { name: 'API', path: '/developers' },
   ];
 
   const handleLogout = () => {
