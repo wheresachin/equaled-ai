@@ -12,49 +12,46 @@ const Landing = () => {
     return (
         <div className="min-h-screen bg-white high-contrast:bg-black font-sans">
             <Navbar />
-            
-            {/* 1. Hero Section */}
+
+            {}
             <section className="pt-32 pb-20 px-4 max-w-7xl mx-auto text-center relative overflow-hidden">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-blue-50/50 rounded-full blur-3xl -z-10 high-contrast:hidden"></div>
-                
+
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-blue-700 font-bold text-sm mb-8 border border-blue-100 high-contrast:bg-yellow-400 high-contrast:text-black high-contrast:border-none animate-in fade-in slide-in-from-bottom-5 duration-700">
                     <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
                     </span>
                     AI-Powered Inclusive Learning
                 </div>
-                
-                <h1 className="text-5xl md:text-7xl font-extrabold mb-8 tracking-tight leading-[1.1] text-gray-900 high-contrast:text-white animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
+
+                <h1 className="text-4xl md:text-5xl font-extrabold mb-8 tracking-tight leading-[1.2] text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-indigo-600 to-violet-600 high-contrast:text-yellow-400 high-contrast:bg-none animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
                     Equal Learning. <br />
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 high-contrast:text-yellow-400 high-contrast:bg-none">
-                        Equal Opportunity.
-                    </span>
+                    Equal Opportunity.
                 </h1>
-                
+
                 <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto mb-12 high-contrast:text-gray-300 leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
                     Accessible education designed for every ability. EqualEd adapts in real-time to support visual, hearing, motor, and cognitive needs.
                 </p>
-                
+
                 <div className="flex flex-col sm:flex-row gap-5 justify-center animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
-                    <button 
+                    <button
                         onClick={() => navigate('/signup')}
                         className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-full text-lg font-bold transition-all transform hover:scale-105 shadow-xl hover:shadow-2xl hover:shadow-blue-200 flex items-center justify-center gap-2 high-contrast:bg-yellow-400 high-contrast:text-black high-contrast:hover:shadow-none"
                     >
                         Get Started <ArrowRight size={20} />
                     </button>
-                    <button 
-                         onClick={() => navigate('#how-it-works')}
-                         className="bg-white border text-gray-700 hover:border-blue-600 hover:text-blue-600 px-10 py-4 rounded-full text-lg font-bold transition-all shadow-sm hover:shadow-lg high-contrast:bg-transparent high-contrast:text-white high-contrast:border-white high-contrast:hover:border-yellow-400 high-contrast:hover:text-yellow-400"
+                    <button
+                        onClick={() => navigate('#how-it-works')}
+                        className="bg-white border text-gray-700 hover:border-blue-600 hover:text-blue-600 px-10 py-4 rounded-full text-lg font-bold transition-all shadow-sm hover:shadow-lg high-contrast:bg-transparent high-contrast:text-white high-contrast:border-white high-contrast:hover:border-yellow-400 high-contrast:hover:text-yellow-400"
                     >
                         See How It Works
                     </button>
                 </div>
-                
 
             </section>
 
-            {/* 2. Features Section */}
+            {}
             <section id="features" className="py-24 bg-gray-50 high-contrast:bg-gray-900">
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="text-center mb-20 max-w-3xl mx-auto">
@@ -64,7 +61,7 @@ const Landing = () => {
                             Our platform includes a suite of powerful tools designed to make learning seamless and accessible.
                         </p>
                     </div>
-                    
+
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {[
                             { icon: Volume2, title: "Text-to-Speech", desc: "Listen to any lesson content with natural sounding AI voices." },
@@ -86,7 +83,7 @@ const Landing = () => {
                 </div>
             </section>
 
-            {/* 4. How It Works Section */}
+            {}
             <section id="how-it-works" className="py-24 bg-white high-contrast:bg-black">
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="text-center mb-20">
@@ -96,7 +93,7 @@ const Landing = () => {
                     </div>
 
                     <div className="grid md:grid-cols-4 gap-8 relative">
-                        {/* Connecting Line (Desktop) */}
+                        {}
                         <div className="hidden md:block absolute top-[60px] left-0 w-full h-1 bg-blue-100 high-contrast:bg-gray-800 -z-10"></div>
 
                         {[
@@ -117,7 +114,7 @@ const Landing = () => {
                 </div>
             </section>
 
-            {/* 4. About Us / Mission Section */}
+            {}
             <section id="about" className="py-24 bg-gray-50 high-contrast:bg-black">
                 <div className="max-w-4xl mx-auto px-4 text-center">
                     <h2 className="text-sm font-bold text-blue-600 mb-3 high-contrast:text-yellow-400 uppercase tracking-wider">Our Mission</h2>
@@ -126,7 +123,7 @@ const Landing = () => {
                         EqualEd creates an inclusive learning experience by combining accessibility-first design with intelligent adaptive technology. Our platform ensures that no student is left behind.
                     </p>
 
-                    {/* Impact Highlight Cards */}
+                    {}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-2xl mx-auto">
                         <div className="bg-white rounded-2xl border border-blue-100 shadow-sm p-8 text-left hover:shadow-lg transition-shadow high-contrast:bg-gray-900 high-contrast:border-gray-700">
                             <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mb-5 high-contrast:bg-yellow-400 high-contrast:text-black">
@@ -146,7 +143,7 @@ const Landing = () => {
                 </div>
             </section>
 
-            {/* 5. Contact Section */}
+            {}
             <section id="contact" className="py-24 bg-blue-50 high-contrast:bg-gray-900 border-t border-gray-200 high-contrast:border-gray-800">
                 <div className="max-w-4xl mx-auto px-4">
                     <div className="bg-white rounded-3xl shadow-xl overflow-hidden high-contrast:bg-black high-contrast:border high-contrast:border-gray-700">
@@ -155,7 +152,7 @@ const Landing = () => {
                                 <h2 className="text-3xl font-bold text-gray-900 mb-4 high-contrast:text-yellow-400">Get in Touch</h2>
                                 <p className="text-gray-600 high-contrast:text-gray-300">Have questions? We'd love to hear from you.</p>
                             </div>
-                            
+
                             <form className="space-y-6">
                                 <div className="grid md:grid-cols-2 gap-6">
                                     <div>

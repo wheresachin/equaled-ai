@@ -10,12 +10,12 @@ const AdminDashboard = () => {
   const { user: currentUser } = useAuth();
   const { showToast } = useToast();
   
-  // View states
-  const [activeView, setActiveView] = useState('users'); // 'users' or 'tasks'
+  
+  const [activeView, setActiveView] = useState('users'); 
   const [users, setUsers] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all'); // all, teacher, student / active, completed
+  const [filter, setFilter] = useState('all'); 
   const [searchQuery, setSearchQuery] = useState('');
   
   // Modal states
@@ -355,7 +355,7 @@ const AdminDashboard = () => {
       <Navbar />
       
       <main className="pt-28 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        {/* Header Section */}
+        {}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-extrabold text-gray-900 high-contrast:text-yellow-400">Admin Dashboard</h1>
@@ -390,7 +390,7 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Stats Row */}
+        {}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
           {[
             { label: activeView === 'users' ? 'Total Users' : 'Total Tasks', count: activeView === 'users' ? users.length : tasks.length, icon: activeView === 'users' ? Users : ClipboardList, color: 'text-blue-600', bg: 'bg-blue-50' },
@@ -409,7 +409,7 @@ const AdminDashboard = () => {
           ))}
         </div>
 
-        {/* Controls Row */}
+        {}
         <div className="bg-white p-4 rounded-3xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-4 mb-6 high-contrast:bg-gray-900 high-contrast:border-gray-800">
           <div className="flex-1 relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
@@ -454,11 +454,11 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Content Section */}
+        {}
         {activeView === 'users' ? renderUserTable() : renderTaskTable()}
       </main>
 
-      {/* Add/Edit Modal (Users only) */}
+      {}
       {showModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={handleCloseModal} />

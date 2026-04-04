@@ -56,7 +56,7 @@ const ManageLessons = () => {
       <div className="flex-1 md:ml-64 flex flex-col min-h-screen">
         <DashboardNavbar onMenuClick={() => setSidebarOpen(true)} />
         <main className="flex-1 pt-16 md:pt-20 px-4 sm:px-6 lg:px-8 pb-8 overflow-y-auto">
-            {/* Header */}
+            {}
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8 mt-6">
                 <div>
                     <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 high-contrast:text-yellow-400">Manage Lessons</h1>
@@ -86,7 +86,7 @@ const ManageLessons = () => {
                 </div>
             ) : (
                 <>
-                  {/* Desktop Table */}
+                  {}
                   <div className="hidden sm:block bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden high-contrast:bg-gray-900 high-contrast:border-gray-800">
                       <table className="w-full">
                           <thead className="bg-gray-50 border-b border-gray-100 high-contrast:bg-gray-800 high-contrast:border-gray-700">
@@ -127,7 +127,7 @@ const ManageLessons = () => {
                       </table>
                   </div>
 
-                  {/* Mobile Cards */}
+                  {}
                   <div className="space-y-4 sm:hidden">
                       {lessons.map((lesson) => (
                           <div key={lesson._id} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm high-contrast:bg-gray-900 high-contrast:border-gray-800">

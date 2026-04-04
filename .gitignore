@@ -24,3 +24,13 @@ Thumbs.db
 # Editor
 .vscode/
 .idea/
+
+# Backup files
+*.bak
+
+# Debug / test scripts (do not commit)
+backend/test_ai.js
+backend/test_ai_local.js
+backend/test_ai_prod.js
+backend/out.json
+backend/list_models.js

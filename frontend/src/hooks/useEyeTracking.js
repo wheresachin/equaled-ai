@@ -1,19 +1,12 @@
-/**
- * useEyeTracking — MediaPipe FaceMesh with iris tracking + mesh overlay
- *
- * Draws the full face mesh + iris landmarks on the camera canvas.
- * Tracks iris position to move a red gaze cursor on screen.
- * Top/bottom 10% of screen triggers scroll.
- */
 import { useEffect, useRef, useState } from 'react';
 
 const FACE_MESH_URL = 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/face_mesh.js';
 const CAMERA_URL    = 'https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1675466862/camera_utils.js';
 const DRAWING_URL   = 'https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3.1675466124/drawing_utils.js';
 
-// Iris landmark indices (only available when refineLandmarks: true)
-const LEFT_IRIS  = 473; // left iris center
-const RIGHT_IRIS = 468; // right iris center
+
+const LEFT_IRIS  = 473; 
+const RIGHT_IRIS = 468; 
 
 const loadScript = (src, id) =>
   new Promise((resolve, reject) => {
@@ -24,7 +17,7 @@ const loadScript = (src, id) =>
     document.head.appendChild(s);
   });
 
-// ── Flash scroll zone indicator ──────────────────────────────────
+
 const flashScrollZone = (dir) => {
   const id = `gaze-scroll-${dir}`;
   let el = document.getElementById(id);
@@ -51,7 +44,7 @@ const flashScrollZone = (dir) => {
   setTimeout(() => { el.style.opacity = '0'; }, 400);
 };
 
-// ── Persistent scroll zone hints (always visible when eye tracker is on) ──
+
 const showScrollHints = () => {
   ['up','down'].forEach(dir => {
     const id = `gaze-hint-${dir}`;
@@ -99,7 +92,7 @@ export const useEyeTracking = (enabled) => {
     return { x: s.x / n, y: s.y / n };
   };
 
-  // ── Build camera preview DOM ─────────────────────────────────────
+  
   const createPreview = () => {
     if (document.getElementById('eye-cam-container')) {
       return {
@@ -118,7 +111,7 @@ export const useEyeTracking = (enabled) => {
       background: '#000',
     });
 
-    // Video — mirrored so user sees natural selfie view
+    
     const video = document.createElement('video');
     video.id = 'eye-cam-video'; video.playsInline = true; video.muted = true;
     Object.assign(video.style, {
@@ -127,13 +120,13 @@ export const useEyeTracking = (enabled) => {
       transform: 'scaleX(-1)', display: 'block',
     });
 
-    // Canvas — also mirrored to match video, draw at original coords
+    
     const canvas = document.createElement('canvas');
     canvas.id = 'eye-cam-canvas'; canvas.width = 320; canvas.height = 240;
     Object.assign(canvas.style, {
       position: 'absolute', top: 0, left: 0,
       width: '100%', height: '100%',
-      transform: 'scaleX(-1)',   // mirror to match video
+      transform: 'scaleX(-1)',   
     });
 
     const label = document.createElement('div');
@@ -147,7 +140,7 @@ export const useEyeTracking = (enabled) => {
     });
     label.textContent = '👁️ Eye Tracker';
 
-    // Close button
+    
     const closeBtn = document.createElement('button');
     Object.assign(closeBtn.style, {
       position: 'absolute', top: '8px', right: '8px',
@@ -174,7 +167,7 @@ export const useEyeTracking = (enabled) => {
     return { video, canvas };
   };
 
-  // ── Process FaceMesh results ─────────────────────────────────────
+  
   const onResults = (results) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -184,17 +177,17 @@ export const useEyeTracking = (enabled) => {
     if (!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) return;
     const lm = results.multiFaceLandmarks[0];
 
-    // ── Draw face mesh via MediaPipe drawing utils ───────────────
+    
     if (window.drawConnectors && window.FACEMESH_TESSELATION) {
-      // Dim tesselation mesh
+      
       window.drawConnectors(ctx, lm, window.FACEMESH_TESSELATION, {
         color: 'rgba(255,255,255,0.12)', lineWidth: 1,
       });
-      // Face contours
+      
       window.drawConnectors(ctx, lm, window.FACEMESH_FACE_OVAL, {
         color: 'rgba(255,255,255,0.5)', lineWidth: 1.5,
       });
-      // Eyes
+      
       window.drawConnectors(ctx, lm, window.FACEMESH_RIGHT_EYE, {
         color: 'rgba(239,68,68,0.8)', lineWidth: 2,
       });
@@ -203,7 +196,7 @@ export const useEyeTracking = (enabled) => {
       });
     }
 
-    // ── Draw iris rings ──────────────────────────────────────────
+    
     if (window.drawConnectors && window.FACEMESH_RIGHT_IRIS && window.FACEMESH_LEFT_IRIS) {
       window.drawConnectors(ctx, lm, window.FACEMESH_RIGHT_IRIS, {
         color: 'rgba(59,130,246,0.95)', lineWidth: 2,
@@ -213,7 +206,7 @@ export const useEyeTracking = (enabled) => {
       });
     }
 
-    // ── Draw iris center dots ────────────────────────────────────
+    
     [LEFT_IRIS, RIGHT_IRIS].forEach(idx => {
       if (!lm[idx]) return;
       ctx.beginPath();
@@ -222,20 +215,20 @@ export const useEyeTracking = (enabled) => {
       ctx.fill();
     });
 
-    // ── Compute gaze position (iris center → screen coords) ──────
+    
     if (!lm[LEFT_IRIS] || !lm[RIGHT_IRIS]) return;
     const irisX = (lm[LEFT_IRIS].x + lm[RIGHT_IRIS].x) / 2;
     const irisY = (lm[LEFT_IRIS].y + lm[RIGHT_IRIS].y) / 2;
 
-    // irisX in camera space (0=left of camera, 1=right)
-    // After scaleX(-1) mirror, 0=left of screen when user holds hand left.
-    // (1 - irisX) converts to screen space.
+    
+    
+    
     const rawX = (1 - irisX) * window.innerWidth;
-    // Vertical: typical face centre is ~0.4-0.6, expand to full screen
+    
     const rawY = ((irisY - 0.25) / 0.5) * window.innerHeight;
     const { x, y } = smoothGaze(rawX, Math.max(0, Math.min(window.innerHeight, rawY)));
 
-    // ── Gaze cursor ──────────────────────────────────────────────
+    
     let cursor = document.getElementById('gaze-cursor');
     if (!cursor) {
       cursor = document.createElement('div');
@@ -255,14 +248,14 @@ export const useEyeTracking = (enabled) => {
     cursor.style.left = `${x}px`;
     cursor.style.top  = `${y}px`;
 
-    // ── Dwell click (stay 2s on same spot → click) ────────────────────────────
+    
     const DWELL_MS   = 2000;
-    const DWELL_RADIUS = 90; // Increased for better stability/jitter handling
+    const DWELL_RADIUS = 90; 
     const dwell = dwellRef.current;
     const dist = Math.hypot(x - dwell.x, y - dwell.y);
 
     if (dist > DWELL_RADIUS) {
-      // Gaze moved — reset dwell
+      
       dwell.x = x; dwell.y = y;
       dwell.startTime = performance.now();
       dwell.active = false;
@@ -271,33 +264,33 @@ export const useEyeTracking = (enabled) => {
       cursor.style.boxShadow = '0 0 20px rgba(239,68,68,0.5)';
       cursor.style.transform = 'translate(-50%,-50%) scale(1)';
     } else if (!dwell.active) {
-      // Gaze is stable — show fill progress
+      
       const elapsed = performance.now() - dwell.startTime;
       const pct = Math.min(elapsed / DWELL_MS, 1);
       const deg = Math.round(pct * 360);
       
-      // Visual feedback: Conic gradient for progress + scaling effect
+      
       cursor.style.background = `conic-gradient(rgba(99,102,241,0.8) ${deg}deg, rgba(239,68,68,0.1) ${deg}deg)`;
       cursor.style.border = '3px solid rgba(99,102,241,1)';
       cursor.style.boxShadow = `0 0 ${20 + (pct * 20)}px rgba(99,102,241,0.7)`;
       cursor.style.transform = `translate(-50%,-50%) scale(${1 + (pct * 0.2)})`;
 
       if (elapsed >= DWELL_MS) {
-        // Fire click!
+        
         dwell.active = true;
         cursor.style.background = 'rgba(99,102,241,0.9)';
-        cursor.style.transform = 'translate(-50%,-50%) scale(0.9)'; // Impact shrink effect
+        cursor.style.transform = 'translate(-50%,-50%) scale(0.9)'; 
         
-        // Find element at gaze point
+        
         const el = document.elementFromPoint(x, y);
-        // Ensure we don't click the cursor itself or its parent containers
+        
         if (el && !['gaze-cursor', 'eye-cam-container', 'gaze-hint-up', 'gaze-hint-down'].includes(el.id)) {
           el.click();
-          // Visual "Flash" on click
+          
           cursor.style.boxShadow = '0 0 50px rgba(99,102,241,1)';
         }
         
-        // Reset after 1s so user can look around before next click
+        
         setTimeout(() => {
           dwell.x = -999; dwell.y = -999;
           dwell.startTime = performance.now();
@@ -307,7 +300,7 @@ export const useEyeTracking = (enabled) => {
       }
     }
 
-    // ── Edge scroll ──────────────────────────────────────────────
+    
     const scrollEl = document.querySelector('main') || document.documentElement;
     if (!scrollCD.current) {
       const vh = window.innerHeight;
@@ -325,7 +318,7 @@ export const useEyeTracking = (enabled) => {
     }
   };
 
-  // ── Init ─────────────────────────────────────────────────────────
+  
   const init = async () => {
     let stream;
     try {
@@ -350,7 +343,7 @@ export const useEyeTracking = (enabled) => {
     });
     faceMesh.setOptions({
       maxNumFaces: 1,
-      refineLandmarks: true,        // required for iris landmarks (468-477)
+      refineLandmarks: true,        
       minDetectionConfidence: 0.55,
       minTrackingConfidence: 0.55,
     });
@@ -371,7 +364,7 @@ export const useEyeTracking = (enabled) => {
     console.log('[EyeTracking] FaceMesh started with iris tracking.');
   };
 
-  // ── Cleanup ──────────────────────────────────────────────────────
+  
   const cleanup = () => {
     try { cameraRef.current?.stop(); } catch (e) {}
     try { meshRef.current?.close(); } catch (e) {}
@@ -405,7 +398,7 @@ export const useEyeTracking = (enabled) => {
       }, 400))
       .catch(() => setStatus('error'));
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [enabled]);
 
   return { status };

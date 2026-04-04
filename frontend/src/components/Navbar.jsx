@@ -41,13 +41,13 @@ const Navbar = () => {
     <nav className="fixed w-full bg-white/90 backdrop-blur-md border-b border-gray-100 z-50 high-contrast:bg-black high-contrast:border-yellow-400">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          {/* Logo */}
+          {}
           <Link to="/" className="flex items-center">
             <img src="/logo.png" alt="EqualEd Logo" className="h-24 w-24 object-contain" />
             <span className="text-3xl font-extrabold text-gray-900 high-contrast:text-yellow-400 -ml-3">EqualEd</span>
           </Link>
 
-          {/* Desktop Navigation - Hidden for Admin */}
+          {}
           <div className="hidden md:flex items-center space-x-8">
             {!isAdmin && navLinks.map((link) => (
               <a 
@@ -60,7 +60,7 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Desktop Actions */}
+          {}
           <div className="hidden md:flex items-center gap-4">
             <div className="flex items-center gap-2 bg-gray-100 p-1 rounded-full high-contrast:bg-gray-800">
               <button 
@@ -89,7 +89,7 @@ const Navbar = () => {
                   Dashboard
                 </Link>
 
-                {/* Profile Pill -> Toggles Dropdown */}
+                {}
                 <button 
                   onClick={() => setShowUserMenu(!showUserMenu)}
                   className="flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-full border border-blue-100 hover:bg-blue-100 transition-colors high-contrast:bg-gray-900 high-contrast:border-yellow-400"
@@ -100,7 +100,7 @@ const Navbar = () => {
                   <span className="text-sm font-bold text-gray-800 high-contrast:text-white">{user.name}</span>
                 </button>
 
-                {/* Profile Dropdown */}
+                {}
                 {showUserMenu && (
                   <div className="absolute right-0 top-14 w-48 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 animate-in fade-in slide-in-from-top-2 high-contrast:bg-black high-contrast:border-yellow-400">
                     <div className="px-4 py-2 border-b border-gray-50 mb-1 high-contrast:border-gray-800">
@@ -132,7 +132,7 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
+          {}
           <div className="md:hidden flex items-center gap-4">
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -144,7 +144,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {}
       {isMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-100 absolute w-full high-contrast:bg-black high-contrast:border-gray-800">
           <div className="px-4 pt-4 pb-6 space-y-2">

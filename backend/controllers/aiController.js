@@ -1,9 +1,9 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-// POST /api/ai/chat
+
 const chatWithAI = async (req, res) => {
   try {
-    // Only students can use this
+    
     if (!req.user || req.user.role !== 'student') {
       return res.status(403).json({ message: 'Access denied. Students only.' });
     }

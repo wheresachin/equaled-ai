@@ -31,7 +31,7 @@ const Signup = () => {
       const payload = {
         ...formData,
         email: formData.email.trim().toLowerCase(),
-        disabilityType: formData.disabilityType || 'none', // default to 'none' if empty
+        disabilityType: formData.disabilityType || 'none', 
       };
 
       const res = await fetch(`${API_BASE}/api/auth/register`, {

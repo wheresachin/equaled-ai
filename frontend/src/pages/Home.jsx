@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-// ── Mock data ──────────────────────────────────────────────────────────────
+
 const ANNOUNCEMENTS = [
   { id: 1, icon: '📢', title: 'New Lesson Added', body: 'Introduction to Chemistry is now live!', time: '2h ago', color: 'bg-blue-50 border-blue-100' },
   { id: 2, icon: '🏆', title: 'Weekly Challenge', body: 'Complete 3 lessons this week and earn a badge!', time: '1d ago', color: 'bg-yellow-50 border-yellow-100' },
@@ -33,7 +33,7 @@ const STATS = [
   { label: 'Best Score', value: '95%', icon: Star, bg: 'bg-yellow-50', text: 'text-yellow-600', border: 'border-yellow-100' },
 ];
 
-// ── Component ────────────────────────────────────────────────────────────
+
 const Home = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -43,7 +43,7 @@ const Home = () => {
   return (
     <div className="space-y-6 pt-4">
 
-      {/* ── Quick Stats ── */}
+      {}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {STATS.map(({ label, value, icon: Icon, bg, text, border }) => (
           <div key={label} className={`${bg} ${border} border rounded-2xl p-4 flex items-center gap-3`}>
@@ -56,7 +56,7 @@ const Home = () => {
         ))}
       </div>
 
-      {/* ── Quick Access Features ── */}
+      {}
       <div>
         <h2 className="text-lg font-bold text-gray-800 mb-3">Quick Access</h2>
         <div className="grid md:grid-cols-3 gap-4">
@@ -75,7 +75,7 @@ const Home = () => {
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        {/* ── Recent Activity ── */}
+        {}
         <div>
           <h2 className="text-lg font-bold text-gray-800 mb-3">Recent Activity</h2>
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm divide-y divide-gray-50">
@@ -93,7 +93,7 @@ const Home = () => {
           </div>
         </div>
 
-        {/* ── Announcements ── */}
+        {}
         <div>
           <h2 className="text-lg font-bold text-gray-800 mb-3">Announcements</h2>
           <div className="space-y-3">

@@ -73,27 +73,27 @@ const loginUser = async (req, res) => {
     }
 };
 
-// POST /api/auth/forgot-password
+
 const forgotPassword = async (req, res) => {
     const { email } = req.body;
     try {
         const user = await User.findOne({ email });
-        // Always respond with success to prevent email enumeration
+        
         if (!user) {
             return res.json({ message: 'If that email exists, a reset link has been sent.' });
         }
 
-        // Generate a secure token
+        
         const resetToken = crypto.randomBytes(32).toString('hex');
         user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
-        user.resetPasswordExpires = Date.now() + 60 * 60 * 1000; // 1 hour
+        user.resetPasswordExpires = Date.now() + 60 * 60 * 1000; 
         await user.save({ validateBeforeSave: false });
 
-        // Build reset URL
+        
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
         const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
 
-        // Send password reset email via Brevo
+        
         try {
             await sendPasswordResetEmail({
                 toEmail: user.email,
@@ -103,7 +103,7 @@ const forgotPassword = async (req, res) => {
             console.log(`[Auth] Reset email sent to ${email}`);
         } catch (emailError) {
             console.error('[Auth] Email send failed:', emailError.message);
-            // Clear the token since email didn't send
+            
             user.resetPasswordToken   = undefined;
             user.resetPasswordExpires = undefined;
             await user.save({ validateBeforeSave: false });

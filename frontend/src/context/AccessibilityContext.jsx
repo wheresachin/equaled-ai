@@ -3,9 +3,9 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 const AccessibilityContext = createContext();
 
 export const AccessibilityProvider = ({ children }) => {
-  const [disabilityType, setDisabilityType] = useState("none"); // 'visual', 'hearing', 'motor', 'cognitive', 'none'
+  const [disabilityType, setDisabilityType] = useState("none"); 
   const [highContrast, setHighContrast] = useState(false);
-  const [fontSize, setFontSize] = useState(16); // Base font size
+  const [fontSize, setFontSize] = useState(16); 
   const [focusMode, setFocusMode] = useState(false);
   const [captionsEnabled, setCaptionsEnabled] = useState(false);
   const [eyeTrackingEnabled, setEyeTrackingEnabled] = useState(false);
@@ -13,10 +13,10 @@ export const AccessibilityProvider = ({ children }) => {
   const [handTrackingEnabled, setHandTrackingEnabled] = useState(false);
   const [handTrackingStatus, setHandTrackingStatus] = useState('idle');
   const [voiceEnabled, setVoiceEnabled] = useState(false);
-  const [voiceLang, setVoiceLang] = useState('hi-IN'); // Smart default: handles Hindi & English
-  const [isAwake, setIsAwake] = useState(false); // Passive listening by default
+  const [voiceLang, setVoiceLang] = useState('hi-IN'); 
+  const [isAwake, setIsAwake] = useState(false); 
 
-  // Apply disability defaults when type changes
+  
   useEffect(() => {
     switch (disabilityType) {
       case "visual":
@@ -32,7 +32,7 @@ export const AccessibilityProvider = ({ children }) => {
         setFocusMode(false);
         break;
       case "motor":
-        // Simplified implementation for motor: larger buttons (handled in UI via context)
+        
         setFontSize(20);
         setHighContrast(false);
         setCaptionsEnabled(false);
@@ -45,7 +45,7 @@ export const AccessibilityProvider = ({ children }) => {
         setCaptionsEnabled(false);
         break;
       default:
-        // Reset to defaults or keep user preferences? Resetting for demo simplicity.
+        
         setHighContrast(false);
         setFontSize(16);
         setFocusMode(false);
@@ -54,7 +54,7 @@ export const AccessibilityProvider = ({ children }) => {
     }
   }, [disabilityType]);
 
-  // Apply styles to document root for global changes
+  
   useEffect(() => {
     document.documentElement.style.fontSize = `${fontSize}px`;
     if (highContrast) {

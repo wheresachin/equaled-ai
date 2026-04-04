@@ -4,7 +4,7 @@ import { AccessibilityProvider } from './context/AccessibilityContext';
 import AuthProvider from './context/AuthContext';
 import { useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
-import VoiceAssistant from './components/VoiceAssistant'; // Add import
+import VoiceAssistant from './components/VoiceAssistant'; 
 import Layout from './components/Layout';
 import { useAccessibility } from './context/AccessibilityContext';
 import { useEyeTracking } from './hooks/useEyeTracking';
@@ -27,7 +27,7 @@ import TalkToAI from './pages/TalkToAI';
 import Home from './pages/Home';
 import ForgotPassword from './pages/ForgotPassword';
 
-// Eye tracking activator — student only
+
 const EyeTrackingActivator = () => {
   const { eyeTrackingEnabled, toggleEyeTracking, setEyeTrackingStatus } = useAccessibility();
   const { user } = useAuth();
@@ -38,7 +38,7 @@ const EyeTrackingActivator = () => {
     setEyeTrackingStatus(isStudent ? status : 'idle');
   }, [status, setEyeTrackingStatus, isStudent]);
 
-  // Close button in the camera preview dispatches this event
+  
   React.useEffect(() => {
     const handler = () => {
       if (eyeTrackingEnabled) toggleEyeTracking();
@@ -50,7 +50,7 @@ const EyeTrackingActivator = () => {
   return null;
 };
 
-// Hand tracking activator — student only
+
 const HandTrackingActivator = () => {
   const { handTrackingEnabled, toggleHandTracking, setHandTrackingStatus } = useAccessibility();
   const { user } = useAuth();
@@ -61,7 +61,7 @@ const HandTrackingActivator = () => {
     setHandTrackingStatus(isStudent ? status : 'idle');
   }, [status, setHandTrackingStatus, isStudent]);
 
-  // Close button in the camera preview dispatches this event
+  
   React.useEffect(() => {
     const handler = () => {
       if (handTrackingEnabled) toggleHandTracking();
@@ -73,7 +73,7 @@ const HandTrackingActivator = () => {
   return null;
 };
 
-// Voice Assistant Activator — student only OR unauthenticated (for login command)
+
 const VoiceAssistantActivator = () => {
   const { user } = useAuth();
   if (user && user.role !== 'student') return null;
@@ -87,34 +87,36 @@ function App() {
       <ToastProvider>
         <AuthProvider>
           <AccessibilityProvider>
-            {/* Global activators — student only */}
-            <EyeTrackingActivator />
-            <HandTrackingActivator />
-            <VoiceAssistantActivator />
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
-            <Route path="/admin-dashboard" element={<AdminDashboard />} />
-            <Route path="/manage-lessons" element={<ManageLessons />} />
-            <Route path="/create-lesson" element={<CreateLesson />} />
-            <Route path="/create-quiz" element={<CreateQuiz />} />
-            <Route path="/student-progress" element={<StudentProgress />} />
-            <Route path="/submission-review" element={<SubmissionReview />} />
-            <Route path="/manage-students" element={<ManageStudents />} />
-            
-            <Route element={<Layout />}>
-              <Route path="/home"       element={<Home />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/lesson/:id" element={<Lesson />} />
-              <Route path="/talk-to-ai" element={<TalkToAI />} />
-            </Route>
+            <>
+              {}
+              <EyeTrackingActivator />
+              <HandTrackingActivator />
+              <VoiceAssistantActivator />
+              <Routes>
+                <Route path="/" element={<Landing />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
+                <Route path="/admin-dashboard" element={<AdminDashboard />} />
+                <Route path="/manage-lessons" element={<ManageLessons />} />
+                <Route path="/create-lesson" element={<CreateLesson />} />
+                <Route path="/create-quiz" element={<CreateQuiz />} />
+                <Route path="/student-progress" element={<StudentProgress />} />
+                <Route path="/submission-review" element={<SubmissionReview />} />
+                <Route path="/manage-students" element={<ManageStudents />} />
 
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </AccessibilityProvider>
+                <Route element={<Layout />}>
+                  <Route path="/home"       element={<Home />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/lesson/:id" element={<Lesson />} />
+                  <Route path="/talk-to-ai" element={<TalkToAI />} />
+                </Route>
+
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </>
+          </AccessibilityProvider>
         </AuthProvider>
       </ToastProvider>
     </BrowserRouter>

@@ -20,11 +20,11 @@ export const useVoiceCommands = () => {
     if (!transcript) return;
 
     const lowerTranscript = transcript.toLowerCase();
-    const lastCommand = lowerTranscript.split(' ').slice(-5).join(' '); // Look at recent words
+    const lastCommand = lowerTranscript.split(' ').slice(-5).join(' '); 
 
     if (lastCommand.includes('read lesson') || lastCommand.includes('read page')) {
-      // Trigger reading content (will need to pass content or have a way to access it)
-      // For now, we'll dispatch a custom event that the page can listen to
+      
+      
       window.dispatchEvent(new CustomEvent('voice-command', { detail: 'read' }));
       resetTranscript();
     } else if (lastCommand.includes('stop reading') || lastCommand.includes('stop')) {
@@ -43,7 +43,7 @@ export const useVoiceCommands = () => {
       speak("High contrast enabled");
       resetTranscript();
     } else if (lastCommand.includes('disable contrast')) {
-      toggleContrast(); // Toggles off if on
+      toggleContrast(); 
       speak("High contrast disabled");
       resetTranscript();
     } else if (lastCommand.includes('focus mode') || lastCommand.includes('enable focus')) {

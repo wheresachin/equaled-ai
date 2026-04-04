@@ -9,7 +9,7 @@ const {
     getMyTasks,
 } = require('../controllers/teacherController');
 
-// Middleware to ensure user is a teacher
+
 const teacherOnly = (req, res, next) => {
     if (req.user && req.user.role === 'teacher') return next();
     res.status(403).json({ message: 'Access denied: teachers only' });

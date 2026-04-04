@@ -73,9 +73,9 @@ const Lesson = () => {
             'Authorization': `Bearer ${user?.token}`
           },
           body: JSON.stringify({ 
-            lessonId: id || "65d1a123f1a2b3c4d5e6f7a8", // Fallback for demo if id is missing
+            lessonId: id || "65d1a123f1a2b3c4d5e6f7a8", 
             isCompleted: true,
-            timeSpent: 5 // mock 5 mins spent
+            timeSpent: 5 
           }),
         });
       } catch (err) {
@@ -154,7 +154,7 @@ const Lesson = () => {
 
             <h1 className={`text-3xl sm:text-4xl font-extrabold mb-8 ${highContrast ? 'text-white' : 'text-gray-900'}`}>{lessonContent.title}</h1>
 
-            {/* Accessibility / Playback Controls */}
+            {}
             <div className={`sticky top-20 z-40 p-4 rounded-2xl shadow-xl border mb-8 flex items-center gap-4 transition-all duration-300 ${
                 highContrast ? 'bg-gray-900 border-yellow-400' : 'bg-white border-gray-100 hover:shadow-2xl'
             }`}>
@@ -184,7 +184,7 @@ const Lesson = () => {
                 </div>
             </div>
 
-            {/* Content Display */}
+            {}
             <div className="space-y-6">
                 {lessonContent.paragraphs.map((para, index) => (
                     <p 
@@ -204,7 +204,7 @@ const Lesson = () => {
                 ))}
             </div>
 
-            {/* Interactive Section */}
+            {}
             <div id="quick-check" className={`mt-8 p-6 rounded-[1.5rem] shadow-xl border transition-all duration-500 transform ${
                 isCompleted ? 'scale-[1.01] border-green-400 ring-2 ring-green-50' : ''
             } ${

@@ -60,7 +60,7 @@ const TeacherDashboard = () => {
         <DashboardNavbar onMenuClick={() => setSidebarOpen(true)} />
         <main className="flex-1 pt-16 md:pt-20 px-4 sm:px-6 lg:px-8 pb-8 overflow-y-auto">
 
-          {/* Header */}
+          {}
           <header className="mb-6 mt-6">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 high-contrast:text-yellow-400">
               Welcome back, {user?.name || 'Teacher'} 👋
@@ -68,7 +68,7 @@ const TeacherDashboard = () => {
             <p className="text-gray-500 high-contrast:text-gray-300">Here's what's happening in your classroom today.</p>
           </header>
 
-          {/* Stats Grid */}
+          {}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
             {stats.map((stat, index) => (
               <div key={index} className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-100 high-contrast:bg-gray-900 high-contrast:border-gray-800">
@@ -88,7 +88,7 @@ const TeacherDashboard = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
 
-            {/* My Students */}
+            {}
             <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6 high-contrast:bg-gray-900 high-contrast:border-gray-800">
               <div className="flex justify-between items-center mb-5">
                 <h2 className="text-xl font-bold text-gray-900 high-contrast:text-white">My Students</h2>
@@ -142,7 +142,7 @@ const TeacherDashboard = () => {
               )}
             </div>
 
-            {/* Quick Actions + Recent Tasks */}
+            {}
             <div className="space-y-6">
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 high-contrast:bg-gray-900 high-contrast:border-gray-800">
                 <h2 className="text-xl font-bold text-gray-900 mb-4 high-contrast:text-white">Quick Actions</h2>
@@ -168,7 +168,7 @@ const TeacherDashboard = () => {
                 </div>
               </div>
 
-              {/* Recent Tasks */}
+              {}
               {tasks.length > 0 && (
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 high-contrast:bg-gray-900 high-contrast:border-gray-800">
                   <h2 className="text-lg font-bold text-gray-900 mb-4 high-contrast:text-white">Recent Tasks</h2>

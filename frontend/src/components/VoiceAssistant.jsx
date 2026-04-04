@@ -1,18 +1,8 @@
-/**
- * VoiceAssistant.jsx
- *
- * Global voice control UI (Restored to classic version):
- *  - Glowing mic button (fixed bottom-center)
- *  - Floating Help and Language icons
- *  - Live transcript preview
- *  - Success / error toast feedback
- */
 import React, { useState, useCallback, useEffect } from 'react';
-import { Mic, MicOff, Globe, HelpCircle, X } from 'lucide-react';
+import { Mic, Globe, HelpCircle, X } from 'lucide-react';
 import { useVoiceControl } from '../hooks/useVoiceControl';
 import { useAccessibility } from '../context/AccessibilityContext';
 
-// ── Feedback toast ─────────────────────────────────────────────────
 const Toast = ({ msg, type }) => {
   if (!msg) return null;
   const colors = {
@@ -34,7 +24,6 @@ const Toast = ({ msg, type }) => {
   );
 };
 
-// ── Transcript bubble ──────────────────────────────────────────────
 const Transcript = ({ text, interim }) => {
   if (!text) return null;
   return (
@@ -51,10 +40,9 @@ const Transcript = ({ text, interim }) => {
   );
 };
 
-// ── Main Component ────────────────────────────────────────────────
 const VoiceAssistant = () => {
   const accessibility = useAccessibility();
-  const { voiceEnabled, voiceLang, toggleVoice, setVoiceLang, isAwake, highContrast } = accessibility;
+  const { voiceEnabled, voiceLang, toggleVoice, setVoiceLang, isAwake, setIsAwake, highContrast } = accessibility;
 
   const [listening, setListening] = useState(false);
   const [transcript, setTranscript] = useState('');
@@ -63,7 +51,6 @@ const VoiceAssistant = () => {
   const [showLangMenu, setShowLangMenu] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
 
-  // ── Drag Logic State ──────────────────────────────────────────────
   const [position, setPosition] = useState(() => {
     const saved = localStorage.getItem('voice_assistant_pos');
     return saved ? JSON.parse(saved) : { x: window.innerWidth * 0.23, y: window.innerHeight - 80 };
@@ -72,14 +59,12 @@ const VoiceAssistant = () => {
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [moved, setMoved] = useState(false);
 
-  // Clear transcript after 5s
   useEffect(() => {
     if (!transcript) return;
     const t = setTimeout(() => setTranscript(''), 5000);
     return () => clearTimeout(t);
   }, [transcript]);
 
-  // Clear feedback after 3s
   useEffect(() => {
     if (!feedback.msg) return;
     const t = setTimeout(() => setFeedback({ msg: '', type: 'success' }), 3000);
@@ -101,14 +86,12 @@ const VoiceAssistant = () => {
     if (!val) setTranscript('');
   }, []);
 
-  // Handle external voice-disable event
   useEffect(() => {
     const handler = () => { if (voiceEnabled) toggleVoice(); };
     window.addEventListener('equaled:voice-disable', handler);
     return () => window.removeEventListener('equaled:voice-disable', handler);
   }, [voiceEnabled, toggleVoice]);
 
-  // ── Pointer Drag Handlers ─────────────────────────────────────────
   const onPointerDown = (e) => {
     setIsDragging(true);
     setMoved(false);
@@ -116,25 +99,18 @@ const VoiceAssistant = () => {
       x: e.clientX - position.x,
       y: e.clientY - position.y
     });
-    // Capture pointer to continue receiving events even if moved outside element
     e.currentTarget.setPointerCapture(e.pointerId);
   };
 
   const onPointerMove = (e) => {
     if (!isDragging) return;
-
     const newX = e.clientX - dragStart.x;
     const newY = e.clientY - dragStart.y;
-
-    // Movement threshold to differentiate click vs drag
     if (Math.abs(newX - position.x) > 5 || Math.abs(newY - position.y) > 5) {
       setMoved(true);
     }
-
-    // Boundary checks
     const boundedX = Math.max(32, Math.min(window.innerWidth - 32, newX));
     const boundedY = Math.max(32, Math.min(window.innerHeight - 32, newY));
-
     setPosition({ x: boundedX, y: boundedY });
   };
 
@@ -144,12 +120,11 @@ const VoiceAssistant = () => {
     localStorage.setItem('voice_assistant_pos', JSON.stringify(position));
   };
 
-  const handleToggle = (e) => {
-    // Only toggle if we didn't move significantly (it's a click, not a drag)
+  const handleToggle = () => {
     if (!moved) {
       if (!voiceEnabled) {
         toggleVoice();
-        setTimeout(() => setIsAwake(true), 100);
+        setTimeout(() => setIsAwake(true), 150);
       } else if (isAwake) {
         setIsAwake(false);
       } else {
@@ -176,13 +151,10 @@ const VoiceAssistant = () => {
 
   return (
     <>
-      {/* Feedback Toast */}
       {feedback.msg && isAwake && !transcript && <Toast msg={feedback.msg} type={feedback.type} />}
 
-      {/* Transcript Preview */}
       {transcript && isAwake && <Transcript text={transcript} interim={interim} />}
 
-      {/* Help Modal */}
       {showHelp && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full max-h-[80vh] overflow-hidden flex flex-col animate-in fade-in zoom-in duration-300">
@@ -216,30 +188,26 @@ const VoiceAssistant = () => {
         </div>
       )}
 
-      {/* Mic button group - Draggable Container */}
       <div
         className={`fixed z-[999998] flex flex-col items-center gap-2 transition-transform duration-75 ${isDragging ? 'scale-105 opacity-90 cursor-grabbing' : 'cursor-grab'}`}
         style={{
           left: position.x,
           top: position.y,
           transform: 'translate(-50%, -50%)',
-          touchAction: 'none' // Prevent scrolling while dragging
+          touchAction: 'none'
         }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
       >
-
-        {/* Language Switcher Overlay */}
         {showLangMenu && (
           <div className="absolute bottom-24 bg-white/95 backdrop-blur border border-gray-100 p-2 rounded-2xl shadow-2xl flex flex-col gap-1 w-32 animate-in slide-in-from-bottom-2 fade-in">
             {langs.map(l => (
               <button
                 key={l.code}
                 onClick={(e) => { e.stopPropagation(); setVoiceLang(l.code); setShowLangMenu(false); }}
-                onPointerDown={(e) => e.stopPropagation()} // Prevent drag start when clicking menu
-                className={`text-left px-3 py-2 rounded-xl text-xs font-bold transition-all ${voiceLang === l.code ? 'bg-indigo-600 text-white' : 'hover:bg-gray-100 text-gray-600'
-                  }`}
+                onPointerDown={(e) => e.stopPropagation()}
+                className={`text-left px-3 py-2 rounded-xl text-xs font-bold transition-all ${voiceLang === l.code ? 'bg-indigo-600 text-white' : 'hover:bg-gray-100 text-gray-600'}`}
               >
                 {l.label}
               </button>
@@ -247,7 +215,6 @@ const VoiceAssistant = () => {
           </div>
         )}
 
-        {/* Top Controls (Help & Globe) */}
         {!isAwake && !listening && (
           <div className="flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2">
             <button
@@ -268,10 +235,9 @@ const VoiceAssistant = () => {
           </div>
         )}
 
-        {/* Main Mic Button */}
         <button
           onClick={handleToggle}
-          onPointerDown={(e) => e.stopPropagation()} // Let the container handle drag, but don't prevent button click logic
+          onPointerDown={(e) => e.stopPropagation()}
           disabled={permDenied}
           className={`
             relative w-16 h-16 rounded-full flex items-center justify-center
@@ -288,7 +254,6 @@ const VoiceAssistant = () => {
               <span className={`absolute inset-[-4px] rounded-full border-2 animate-pulse opacity-40 ${isAwake ? 'border-indigo-400' : 'border-blue-300'}`} />
             </>
           )}
-
           {isAwake ? (
             <Mic size={32} className="animate-pulse" />
           ) : (
@@ -296,7 +261,6 @@ const VoiceAssistant = () => {
           )}
         </button>
 
-        {/* Small Status Pill */}
         <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border shadow-sm
           ${permDenied ? 'bg-red-50 text-red-500 border-red-100' :
             isAwake ? 'bg-indigo-600 text-white border-indigo-500' :

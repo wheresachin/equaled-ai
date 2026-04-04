@@ -1,19 +1,10 @@
-/**
- * useHandTracking — MediaPipe Hands with simplified gestures
- *
- * Gestures:
- *   ☝️  Index finger up only    → Scroll Up
- *   ✌️  Index + middle up       → Scroll Down
- *   👌  Pinch (thumb + index)   → Click element under cursor
- *   🖐️  All 4 fingers up        → Go Back
- */
 import { useEffect, useRef, useState } from 'react';
 
 const HANDS_URL   = 'https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands.js';
 const CAMERA_URL  = 'https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1675466862/camera_utils.js';
 const DRAWING_URL = 'https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3.1675466124/drawing_utils.js';
 
-// ─── Landmark indices ──────────────────────────────────────────────
+
 const WRIST = 0;
 const THUMB_TIP = 4;
 const IDX_TIP = 8, IDX_PIP = 6, IDX_MCP = 5;
@@ -21,10 +12,10 @@ const MID_TIP = 12, MID_PIP = 10, MID_MCP = 9;
 const RING_TIP = 16, RING_PIP = 14, RING_MCP = 13;
 const PINKY_TIP = 20, PINKY_PIP = 18, PINKY_MCP = 17;
 
-// ─── Helpers ───────────────────────────────────────────────────────
+
 const dist2D = (a, b) => Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
 
-// A finger is "up" when the tip is clearly above the PIP joint
+
 const fingerUp = (tip, pip) => tip.y < pip.y - 0.02;
 
 const detectGesture = (lm) => {
@@ -35,17 +26,17 @@ const detectGesture = (lm) => {
   const ringUp   = fingerUp(lm[RING_TIP],  lm[RING_PIP]);
   const pinkyUp  = fingerUp(lm[PINKY_TIP], lm[PINKY_PIP]);
 
-  // Pinch: thumb tip close to index tip
+  
   const pinchDist = dist2D(lm[THUMB_TIP], lm[IDX_TIP]);
   if (pinchDist < 0.08) return 'pinch';
 
-  // All 4 fingers up → back
+  
   if (indexUp && middleUp && ringUp && pinkyUp) return 'open';
 
-  // Peace ✌ → index + middle up, ring + pinky down
+  
   if (indexUp && middleUp && !ringUp && !pinkyUp) return 'peace';
 
-  // Point ☝ → only index up
+  
   if (indexUp && !middleUp && !ringUp && !pinkyUp) return 'point';
 
   return 'none';
@@ -60,7 +51,7 @@ const loadScript = (src, id) =>
     document.head.appendChild(s);
   });
 
-// ─── Hook ─────────────────────────────────────────────────────────
+
 export const useHandTracking = (enabled) => {
   const [status, setStatus] = useState('idle');
   const cameraRef   = useRef(null);
@@ -72,7 +63,7 @@ export const useHandTracking = (enabled) => {
   const scrollCD    = useRef(false);
   const backCD      = useRef(false);
 
-  // ── cleanup ────────────────────────────────────────────────────
+  
   const cleanup = () => {
     try { cameraRef.current?.stop(); } catch (e) {}
     try { handsRef.current?.close(); } catch (e) {}
@@ -88,7 +79,7 @@ export const useHandTracking = (enabled) => {
     setStatus('idle');
   };
 
-  // ── Create preview + canvas ─────────────────────────────────────
+  
   const createPreview = () => {
     if (document.getElementById('hand-cam-container')) {
       return {
@@ -128,7 +119,7 @@ export const useHandTracking = (enabled) => {
     });
     label.textContent = '✋ Hand Control';
 
-    // Close button
+    
     const closeBtn = document.createElement('button');
     Object.assign(closeBtn.style, {
       position: 'absolute', top: '8px', right: '8px',
@@ -153,17 +144,17 @@ export const useHandTracking = (enabled) => {
     return { video, canvas };
   };
 
-  // ── Draw hand skeleton on canvas ─────────────────────────────────
+  
   const drawSkeleton = (lm, canvas) => {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Canvas has CSS scaleX(-1), so draw at original (non-mirrored) coords.
-    // The CSS transform will flip it to match the mirrored video.
+    
+    
     const px = (pt) => pt.x * canvas.width;
     const py = (pt) => pt.y * canvas.height;
 
-    // Try MediaPipe's drawConnectors first (best quality)
+    
     if (window.drawConnectors && window.HAND_CONNECTIONS) {
       window.drawConnectors(ctx, lm, window.HAND_CONNECTIONS, {
         color: 'rgba(99,102,241,0.75)', lineWidth: 2,
@@ -173,14 +164,14 @@ export const useHandTracking = (enabled) => {
         lineWidth: 1, radius: 4,
       });
     } else {
-      // Fallback: manual drawing
+      
       const connections = [
-        [0,1],[1,2],[2,3],[3,4],          // thumb
-        [0,5],[5,6],[6,7],[7,8],          // index
-        [0,9],[9,10],[10,11],[11,12],     // middle
-        [0,13],[13,14],[14,15],[15,16],   // ring
-        [0,17],[17,18],[18,19],[19,20],   // pinky
-        [5,9],[9,13],[13,17],             // palm
+        [0,1],[1,2],[2,3],[3,4],          
+        [0,5],[5,6],[6,7],[7,8],          
+        [0,9],[9,10],[10,11],[11,12],     
+        [0,13],[13,14],[14,15],[15,16],   
+        [0,17],[17,18],[18,19],[19,20],   
+        [5,9],[9,13],[13,17],             
       ];
       ctx.strokeStyle = 'rgba(99,102,241,0.75)';
       ctx.lineWidth = 2;
@@ -199,7 +190,7 @@ export const useHandTracking = (enabled) => {
     }
   };
 
-  // ── Show gesture badge ─────────────────────────────────────────
+  
   const showBadge = (text, color) => {
     let badge = document.getElementById('hand-badge');
     if (!badge) {
@@ -222,7 +213,7 @@ export const useHandTracking = (enabled) => {
     badge._t = setTimeout(() => { badge.style.opacity = '0'; }, 1000);
   };
 
-  // ── Move purple cursor ──────────────────────────────────────────
+  
   const moveCursor = (x, y) => {
     let cursor = document.getElementById('hand-cursor');
     if (!cursor) {
@@ -242,7 +233,7 @@ export const useHandTracking = (enabled) => {
     cursor.style.top  = `${y}px`;
   };
 
-  // ── Process hand results ────────────────────────────────────────
+  
   const onResults = (results) => {
     const canvas = canvasRef.current;
     if (canvas) {
@@ -254,17 +245,17 @@ export const useHandTracking = (enabled) => {
 
     const lm = results.multiHandLandmarks[0];
 
-    // Draw skeleton
+    
     if (canvas) drawSkeleton(lm, canvas);
 
-    // Index tip → cursor position (mirrored)
+    
     const screenX = (1 - lm[IDX_TIP].x) * window.innerWidth;
     const screenY = lm[IDX_TIP].y * window.innerHeight;
     moveCursor(screenX, screenY);
 
     const gesture = detectGesture(lm);
 
-    // ── Pinch → click ───────────────────────────────────────────
+    
     if (gesture === 'pinch' && !pinchLatch.current) {
       pinchLatch.current = true;
       showBadge('👌 Click', '#10b981');
@@ -274,7 +265,7 @@ export const useHandTracking = (enabled) => {
       pinchLatch.current = false;
     }
 
-    // ── Point ☝ → scroll up ─────────────────────────────────────
+    
     if (gesture === 'point' && !scrollCD.current) {
       window.scrollBy({ top: -80, behavior: 'smooth' });
       scrollCD.current = true;
@@ -282,7 +273,7 @@ export const useHandTracking = (enabled) => {
       setTimeout(() => { scrollCD.current = false; }, 400);
     }
 
-    // ── Peace ✌ → scroll down ───────────────────────────────────
+    
     if (gesture === 'peace' && !scrollCD.current) {
       window.scrollBy({ top: 80, behavior: 'smooth' });
       scrollCD.current = true;
@@ -290,7 +281,7 @@ export const useHandTracking = (enabled) => {
       setTimeout(() => { scrollCD.current = false; }, 400);
     }
 
-    // ── Open 🖐 → back (debounced) ───────────────────────────────
+    
     if (gesture === 'open' && lastGesture.current !== 'open' && !backCD.current) {
       backCD.current = true;
       showBadge('🖐️ Back', '#f59e0b');
@@ -300,7 +291,7 @@ export const useHandTracking = (enabled) => {
     lastGesture.current = gesture;
   };
 
-  // ── Init ────────────────────────────────────────────────────────
+  
   const init = async () => {
     let stream;
     try {
@@ -362,7 +353,7 @@ export const useHandTracking = (enabled) => {
       }, 300))
       .catch(() => setStatus('error'));
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [enabled]);
 
   return { status };

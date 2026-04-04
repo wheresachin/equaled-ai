@@ -82,7 +82,7 @@ const StudentProgress = () => {
               </div>
             ) : (
               <>
-                {/* Desktop Table */}
+                {}
                 <div className="hidden sm:block bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden high-contrast:bg-gray-900 high-contrast:border-gray-800">
                     <table className="w-full">
                         <thead className="bg-gray-50 border-b border-gray-100 high-contrast:bg-gray-800 high-contrast:border-gray-700">
@@ -127,7 +127,7 @@ const StudentProgress = () => {
                     </table>
                 </div>
 
-                {/* Mobile Cards */}
+                {}
                 <div className="space-y-4 sm:hidden">
                     {filtered.map((student) => (
                         <div key={student._id || student.id} className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm high-contrast:bg-gray-900 high-contrast:border-gray-800">

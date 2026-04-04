@@ -5,7 +5,7 @@ const lessonSchema = mongoose.Schema({
     content: { type: String, required: true },
     category: { type: String, required: true },
     difficulty: { type: String, enum: ['Beginner', 'Intermediate', 'Advanced'], default: 'Beginner' },
-    author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' } // Link to Teacher
+    author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' } 
 }, { timestamps: true });
 
 const Lesson = mongoose.model('Lesson', lessonSchema);

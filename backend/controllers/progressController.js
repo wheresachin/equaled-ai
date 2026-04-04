@@ -2,9 +2,9 @@ const Progress = require('../models/Progress');
 const Lesson = require('../models/Lesson');
 const User = require('../models/User');
 
-// @desc    Get progress for a student
-// @route   GET /api/progress/student/:studentId
-// @access  Teacher/Admin
+
+
+
 const getStudentProgress = async (req, res) => {
     try {
         const progress = await Progress.find({ userId: req.params.studentId }).populate('lessonId', 'title difficulty');
@@ -14,9 +14,9 @@ const getStudentProgress = async (req, res) => {
     }
 };
 
-// @desc    Get current student's own progress summary
-// @route   GET /api/progress/me
-// @access  Student
+
+
+
 const getMyProgress = async (req, res) => {
     try {
         const progressRecords = await Progress.find({ userId: req.user._id })
@@ -42,9 +42,9 @@ const getMyProgress = async (req, res) => {
     }
 };
 
-// @desc    Get overall class progress (for Teacher)
-// @route   GET /api/progress
-// @access  Teacher
+
+
+
 const getClassProgress = async (req, res) => {
     try {
         const progress = await Progress.find({})
@@ -56,9 +56,9 @@ const getClassProgress = async (req, res) => {
     }
 };
 
-// @desc    Update progress (Mark lesson complete)
-// @route   POST /api/progress
-// @access  Student
+
+
+
 const updateProgress = async (req, res) => {
     const { lessonId, isCompleted, timeSpent } = req.body;
     

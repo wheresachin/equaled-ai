@@ -27,13 +27,13 @@ const getSubmissions = async (req, res) => {
     }
 };
 
-// @desc    Get submissions for a specific lesson (via quiz)
-// @route   GET /api/submissions/lesson/:lessonId
-// @access  Teacher
+
+
+
 const getSubmissionsByLesson = async (req, res) => {
     const { lessonId } = req.params;
     try {
-        // Find quizzes for this lesson
+        
         const quizzes = await require('../models/Quiz').find({ lessonId });
         const quizIds = quizzes.map(q => q._id);
 
@@ -48,9 +48,9 @@ const getSubmissionsByLesson = async (req, res) => {
     }
 };
 
-// @desc    Add teacher feedback to a submission
-// @route   POST /api/submissions/:id/feedback
-// @access  Teacher
+
+
+
 const addFeedback = async (req, res) => {
     const { feedback, score } = req.body;
     try {

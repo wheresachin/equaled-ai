@@ -16,7 +16,7 @@ const protect = async (req, res, next) => {
             req.user = await User.findById(decoded.id).select('-password');
             return next();
         } catch (error) {
-            // Log only relevant info for common auth errors to keep terminal clean
+            
             console.warn(`Auth failed: ${error.name} - ${error.message}`);
             return res.status(401).json({ message: 'Not authorized, token failed' });
         }

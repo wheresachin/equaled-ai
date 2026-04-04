@@ -4,7 +4,7 @@ import { Play, Clock, Star, CheckCircle2, BookOpen, Trophy, TrendingUp, Loader2 
 import { useAuth } from '../context/AuthContext';
 import API_BASE from '../utils/api';
 
-// ── Mock lessons (shown when DB is empty) ─────────────────────────────────
+
 const MOCK_LESSONS = [
   {
     _id: 'mock-1',
@@ -36,7 +36,7 @@ const MOCK_LESSONS = [
   },
 ];
 
-// ── Mock progress (shown when DB has no records) ──────────────────────────
+
 const MOCK_PROGRESS = {
   totalLessons: 4,
   completedLessons: 1,
@@ -49,14 +49,14 @@ const MOCK_PROGRESS = {
   ],
 };
 
-// ── Difficulty color map ──────────────────────────────────────────────────
+
 const diffColor = {
   Beginner:     'bg-green-100 text-green-700',
   Intermediate: 'bg-orange-100 text-orange-700',
   Advanced:     'bg-purple-100 text-purple-700',
 };
 
-// ── Stat card ─────────────────────────────────────────────────────────────
+
 const StatCard = ({ icon: Icon, label, value, sub, color }) => (
   <div className={`flex items-center gap-4 p-4 rounded-2xl border ${color} shadow-sm`}>
     <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-white/60">
@@ -70,7 +70,7 @@ const StatCard = ({ icon: Icon, label, value, sub, color }) => (
   </div>
 );
 
-// ── Progress bar ──────────────────────────────────────────────────────────
+
 const ProgressBar = ({ percent }) => (
   <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
     <div
@@ -80,7 +80,7 @@ const ProgressBar = ({ percent }) => (
   </div>
 );
 
-// ── Main Dashboard ────────────────────────────────────────────────────────
+
 const Dashboard = () => {
   const navigate    = useNavigate();
   const { user }    = useAuth();
@@ -110,11 +110,11 @@ const Dashboard = () => {
       const fetchedLessons = lessonsRes.ok ? await lessonsRes.json() : [];
       const fetchedProgress = progressRes.ok ? await progressRes.json() : null;
 
-      // Use mock data as fallback if DB is empty
+      
       setLessons(fetchedLessons.length > 0 ? fetchedLessons : MOCK_LESSONS);
       setProgress(fetchedProgress?.totalLessons > 0 ? fetchedProgress : MOCK_PROGRESS);
     } catch (err) {
-      // Always show mock data on error so page isn't blank
+      
       setLessons(MOCK_LESSONS);
       setProgress(MOCK_PROGRESS);
       setError('Showing demo data — could not reach server.');
@@ -125,7 +125,7 @@ const Dashboard = () => {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
-  // Build a map of lessonId → progress record for quick lookup
+  
   const progressMap = {};
   progress?.records?.forEach(r => {
     if (r.lessonId?._id) progressMap[r.lessonId._id] = r;
@@ -140,7 +140,7 @@ const Dashboard = () => {
   return (
     <div className="space-y-6 pt-4">
 
-      {/* ── Header ── */}
+      {}
       <div>
         <h1 className="text-3xl font-bold high-contrast:text-yellow-400">
           Welcome back, {user?.name?.split(' ')[0]} 👋
@@ -155,7 +155,7 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* ── Progress Stats ── */}
+      {}
       {progress && (
         <div className="space-y-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -188,7 +188,7 @@ const Dashboard = () => {
             />
           </div>
 
-          {/* Overall progress bar */}
+          {}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
@@ -205,7 +205,7 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* ── Lessons ── */}
+      {}
       <div>
         <h2 className="text-xl font-bold mb-4 text-gray-800 high-contrast:text-yellow-400">
           Your Learning Path
@@ -231,7 +231,7 @@ const Dashboard = () => {
                 onClick={() => navigate(`/lesson/${lesson._id}`)}
                 className="group bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all cursor-pointer relative overflow-hidden high-contrast:bg-gray-900 high-contrast:border-yellow-400"
               >
-                {/* Difficulty badge */}
+                {}
                 <div className={`absolute top-0 right-0 p-2 px-3 rounded-bl-2xl text-xs font-bold uppercase tracking-wider
                   ${diffColor[lesson.difficulty] || 'bg-gray-100 text-gray-600'}
                   high-contrast:bg-yellow-400 high-contrast:text-black`}
@@ -239,7 +239,7 @@ const Dashboard = () => {
                   {lesson.difficulty}
                 </div>
 
-                {/* Completed badge */}
+                {}
                 {isCompleted && (
                   <div className="absolute top-2 left-2 flex items-center gap-1 text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full border border-green-200">
                     <CheckCircle2 size={10} /> Done
@@ -264,7 +264,7 @@ const Dashboard = () => {
                   </span>
                 </div>
 
-                {/* Progress mini-bar */}
+                {}
                 {prog && (
                   <div className="mb-4">
                     <ProgressBar percent={isCompleted ? 100 : 50} />

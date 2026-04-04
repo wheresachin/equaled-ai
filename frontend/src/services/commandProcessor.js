@@ -1,11 +1,3 @@
-/**
- * commandProcessor.js
- *
- * Intent-based bilingual (English + Hindi) command processor.
- * Maps recognized speech text to structured intents.
- */
-
-// ─── Intent Constants ──────────────────────────────────────────────
 export const INTENTS = {
   NAVIGATE_HOME:          'NAVIGATE_HOME',
   NAVIGATE_DASHBOARD:     'NAVIGATE_DASHBOARD',
@@ -29,7 +21,7 @@ export const INTENTS = {
   SCROLL_DOWN:            'SCROLL_DOWN',
   STOP_LISTENING:         'STOP_LISTENING',
   ENABLE_VOICE:           'ENABLE_VOICE',
-  // Disability modes
+  
   SET_VISUAL_MODE:        'SET_VISUAL_MODE',
   SET_HEARING_MODE:       'SET_HEARING_MODE',
   SET_MOTOR_MODE:         'SET_MOTOR_MODE',
@@ -37,9 +29,9 @@ export const INTENTS = {
   RESET_DISABILITY_MODE:  'RESET_DISABILITY_MODE',
 };
 
-// ─── Command Map ───────────────────────────────────────────────────
-// Each intent maps to an array of trigger phrases (English + Hindi).
-// Phrases are lowercased; matching uses normalize() then includes() check.
+
+
+
 export const COMMAND_MAP = {
   [INTENTS.ENABLE_VOICE]: [
     'voice command on', 'voice on', 'वॉइस कमांड ऑन', 'आवाज चालू करो', 
@@ -143,7 +135,7 @@ export const COMMAND_MAP = {
     'आवाज बंद करो', 'sunaai band karo', 'stop', 'sleep mode',
     'voice control off', 'turn off voice control', 'वॉइस कंट्रोल ऑफ', 'वॉयस कंट्रोल ऑफ'
   ],
-  // ── Disability Modes ──
+  
   [INTENTS.SET_VISUAL_MODE]: [
     'visual mode', 'enable visual mode', 'visual mode on', 'blind mode',
     'drishti mode', 'visual accessibility', 'आंखों का मोड', 'visual on',
@@ -170,9 +162,9 @@ export const COMMAND_MAP = {
   ],
 };
 
-// ─── Text normalization ────────────────────────────────────────────
-// Remove punctuation, collapse spaces, lowercase.
-// Also strips common Hindi/English filler words.
+
+
+
 const FILLER = [
   'please', 'karo', 'kardo', 'ok', 'okay', 'hey', 'hello',
   'zara', 'jara', 'toh', 'to', 'na', 'aur', 'bhi',

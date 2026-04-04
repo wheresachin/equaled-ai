@@ -5,10 +5,14 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ['Outfit', 'sans-serif'],
+      },
+    },
   },
   plugins: [
-    function({ addVariant }) {
+    function ({ addVariant }) {
       addVariant('high-contrast', '.high-contrast &')
     }
   ],

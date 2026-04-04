@@ -1,9 +1,9 @@
 const User = require('../models/User');
 const Task = require('../models/Task');
 
-// @desc    Get all users (students and teachers)
-// @route   GET /api/admin/users
-// @access  Private/Admin
+
+
+
 const getUsers = async (req, res) => {
   try {
     const users = await User.find({ role: { $in: ['student', 'teacher'] } }).select('-password');
@@ -13,9 +13,9 @@ const getUsers = async (req, res) => {
   }
 };
 
-// @desc    Create a new user
-// @route   POST /api/admin/users
-// @access  Private/Admin
+
+
+
 const createUser = async (req, res) => {
   const { name, email, password, role, disabilityType } = req.body;
 
@@ -50,9 +50,9 @@ const createUser = async (req, res) => {
   }
 };
 
-// @desc    Update user
-// @route   PUT /api/admin/users/:id
-// @access  Private/Admin
+
+
+
 const updateUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -85,9 +85,9 @@ const updateUser = async (req, res) => {
   }
 };
 
-// @desc    Delete user
-// @route   DELETE /api/admin/users/:id
-// @access  Private/Admin
+
+
+
 const deleteUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -103,9 +103,9 @@ const deleteUser = async (req, res) => {
   }
 };
 
-// @desc    Get all tasks across platform
-// @route   GET /api/admin/tasks
-// @access  Private/Admin
+
+
+
 const getAllTasks = async (req, res) => {
   try {
     const tasks = await Task.find()

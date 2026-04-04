@@ -6,12 +6,12 @@ const createTransporter = () =>
     port: 587,
     secure: false,
     auth: {
-      user: process.env.BREVO_FROM_EMAIL,   // Your Brevo account email
-      pass: process.env.BREVO_SMTP_KEY,     // SMTP API key
+      user: process.env.BREVO_FROM_EMAIL,   
+      pass: process.env.BREVO_SMTP_KEY,     
     },
   });
 
-// ── Send password reset email ─────────────────────────────────────────────
+
 const sendPasswordResetEmail = async ({ toEmail, toName, resetUrl }) => {
   const transporter = createTransporter();
 
@@ -91,7 +91,7 @@ const sendPasswordResetEmail = async ({ toEmail, toName, resetUrl }) => {
   });
 };
 
-// ── Send welcome email (for future use) ──────────────────────────────────
+
 const sendWelcomeEmail = async ({ toEmail, toName }) => {
   const transporter = createTransporter();
   await transporter.sendMail({

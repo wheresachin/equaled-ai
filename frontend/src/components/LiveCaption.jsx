@@ -8,7 +8,7 @@ const LiveCaption = () => {
 
     if (!captionsEnabled || !transcript) return null;
 
-    // Get the last few words to display
+    
     const displayText = transcript.split(' ').slice(-15).join(' ');
 
     return (

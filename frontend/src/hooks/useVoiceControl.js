@@ -1,21 +1,14 @@
-/**
- * useVoiceControl.js
- *
- * Web Speech API hook with ultimate stability:
- *  - Uses refs for ALL props and callbacks to prevent unnecessary restarts.
- *  - Seamless, low-delay restart for non-flickering continuous listening.
- *  - Comprehensive console logging for field debugging.
- */
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { processCommand, getFeedback, INTENTS } from '../services/commandProcessor';
 import { speak } from '../services/textToSpeech';
 
 const SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition;
 
-const SEAMLESS_RESTART_DELAY = 50;  // Minimal flicker
-const COMMAND_COOLDOWN = 1500; // Increased to prevent double-firings since we execute on interim
+const SEAMLESS_RESTART_DELAY = 50;  
+const COMMAND_COOLDOWN = 1500; 
 
 export const useVoiceControl = ({
   enabled,
@@ -26,6 +19,7 @@ export const useVoiceControl = ({
   onListening,
 }) => {
   const { isAwake, setIsAwake } = accessibility;
+  const { user } = useAuth();
   const [supported] = useState(() => !!SpeechRecognition);
   const [permDenied, setPermDenied] = useState(false);
 
@@ -35,8 +29,10 @@ export const useVoiceControl = ({
   const shouldBeRunning = useRef(enabled);
   const lastCommandAt = useRef(0);
   const navigate = useNavigate();
+  const userRef = useRef(user);
+  useEffect(() => { userRef.current = user; }, [user]);
 
-  // ── Stable Refs (Critical for prevent rerender loops) ──────────────
+  
   const isAwakeRef = useRef(isAwake);
   useEffect(() => { isAwakeRef.current = isAwake; }, [isAwake]);
 
@@ -80,31 +76,32 @@ export const useVoiceControl = ({
         onFeedbackRef.current?.(msg, 'info');
         return;
 
-      // ── Navigation ──
-      case INTENTS.NAVIGATE_HOME: navigate('/home'); break;
+      
+      
+      case INTENTS.NAVIGATE_HOME: navigate(userRef.current ? '/home' : '/'); break;
       case INTENTS.NAVIGATE_DASHBOARD: navigate('/dashboard'); break;
       case INTENTS.NAVIGATE_LESSONS: navigate('/lesson/1'); break;
       case INTENTS.NAVIGATE_LOGIN: navigate('/login'); break;
       case INTENTS.NAVIGATE_TALK_TO_AI: navigate('/talk-to-ai'); break;
       case INTENTS.NAVIGATE_BACK: window.history.back(); break;
 
-      // ── Font ──
+      
       case INTENTS.INCREASE_FONT: acc.increaseFont?.(); break;
       case INTENTS.DECREASE_FONT: acc.decreaseFont?.(); break;
 
-      // ── High Contrast ──
+      
       case INTENTS.ENABLE_CONTRAST: if (!acc.highContrast) acc.toggleContrast?.(); break;
       case INTENTS.DISABLE_CONTRAST: if (acc.highContrast) acc.toggleContrast?.(); break;
 
-      // ── Captions ──
+      
       case INTENTS.ENABLE_CAPTIONS: if (!acc.captionsEnabled) acc.toggleCaptions?.(); break;
       case INTENTS.DISABLE_CAPTIONS: if (acc.captionsEnabled) acc.toggleCaptions?.(); break;
 
-      // ── Focus Mode ──
+      
       case INTENTS.ENABLE_FOCUS: if (!acc.focusMode) acc.toggleFocusMode?.(); break;
       case INTENTS.DISABLE_FOCUS: if (acc.focusMode) acc.toggleFocusMode?.(); break;
 
-      // ── Eye Tracker ──
+      
       case INTENTS.ENABLE_EYE_TRACKER:
         if (!acc.eyeTrackingEnabled) {
           if (acc.handTrackingEnabled) acc.toggleHandTracking?.();
@@ -115,7 +112,7 @@ export const useVoiceControl = ({
         if (acc.eyeTrackingEnabled) acc.toggleEyeTracking?.();
         break;
 
-      // ── Hand Tracker ──
+      
       case INTENTS.ENABLE_HAND_TRACKER:
         if (!acc.handTrackingEnabled) {
           if (acc.eyeTrackingEnabled) acc.toggleEyeTracking?.();
@@ -126,11 +123,11 @@ export const useVoiceControl = ({
         if (acc.handTrackingEnabled) acc.toggleHandTracking?.();
         break;
 
-      // ── Scroll ──
+      
       case INTENTS.SCROLL_UP: window.scrollBy({ top: -400, behavior: 'smooth' }); break;
       case INTENTS.SCROLL_DOWN: window.scrollBy({ top: 400, behavior: 'smooth' }); break;
 
-      // ── Disability Modes ──
+      
       case INTENTS.SET_VISUAL_MODE: acc.setDisabilityType?.('visual'); break;
       case INTENTS.SET_HEARING_MODE: acc.setDisabilityType?.('hearing'); break;
       case INTENTS.SET_MOTOR_MODE: acc.setDisabilityType?.('motor'); break;
@@ -146,7 +143,7 @@ export const useVoiceControl = ({
   const executeIntentRef = useRef(executeIntent);
   useEffect(() => { executeIntentRef.current = executeIntent; }, [executeIntent]);
 
-  // ── Start logic ──────────────────────────────────────────────────
+  
   const startRecognition = useCallback(() => {
     if (!supported || permDenied || isRunning.current || !shouldBeRunning.current) {
       return;
@@ -172,15 +169,15 @@ export const useVoiceControl = ({
       if (shouldBeRunning.current && !permDenied) {
         clearTimeout(restartTimer.current);
         restartTimer.current = setTimeout(() => {
-          // Check TTS speaking to avoid feedback loop
+          
           if (shouldBeRunning.current && !isRunning.current && !window.speechSynthesis.speaking) {
             startRecognition();
           } else if (window.speechSynthesis.speaking) {
-            // Polling for TTS end
+            
             let attempts = 0;
             const poll = setInterval(() => {
               attempts++;
-              if (!window.speechSynthesis.speaking || attempts > 15) { // max wait 7.5s
+              if (!window.speechSynthesis.speaking || attempts > 15) { 
                 clearInterval(poll);
                 startRecognition();
               }
@@ -192,11 +189,22 @@ export const useVoiceControl = ({
 
     rec.onerror = (e) => {
       console.warn('[Voice] Error:', e.error);
-      if (e.error === 'not-allowed') {
+      if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+        
         setPermDenied(true);
         shouldBeRunning.current = false;
-        onFeedbackRef.current?.('Mic permission denied', 'error');
+        isRunning.current = false;
+        onListeningRef.current?.(false);
+        onFeedbackRef.current?.('Mic permission denied. Please allow mic access.', 'error');
+      } else if (e.error === 'no-speech' || e.error === 'network' || e.error === 'audio-capture') {
+        
+        console.log('[Voice] Non-fatal error, restarting...');
+        isRunning.current = false;
+      } else if (e.error === 'aborted') {
+        
+        isRunning.current = false;
       }
+      
     };
 
     rec.onresult = (event) => {
@@ -210,7 +218,7 @@ export const useVoiceControl = ({
       const now = Date.now();
       if (now - lastCommandAt.current < COMMAND_COOLDOWN) return;
 
-      // For interim, execute immediately for lightning-fast response
+      
       if (isInterim) {
         const intent = processCommand(text);
         if (!intent) return;
@@ -267,7 +275,7 @@ export const useVoiceControl = ({
     onListeningRef.current?.(false);
   }, []);
 
-  // ── Lifecycle ──
+  
   useEffect(() => {
     if (enabled && supported && !permDenied) {
       startRecognition();
@@ -277,8 +285,8 @@ export const useVoiceControl = ({
     return () => stopRecognition();
   }, [enabled, supported, permDenied, startRecognition, stopRecognition]);
 
-  // ── Pause/resume when Quick Check STT mic is used ──────────────────────
-  // Prevents mic conflict: only one SpeechRecognition at a time
+  
+  
   useEffect(() => {
     const onSTTStart = () => {
       if (isRunning.current) {

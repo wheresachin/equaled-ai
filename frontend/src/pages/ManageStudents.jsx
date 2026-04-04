@@ -147,7 +147,7 @@ const ManageStudents = () => {
         <DashboardNavbar onMenuClick={() => setSidebarOpen(true)} />
         <main className="flex-1 pt-16 md:pt-20 px-4 sm:px-6 lg:px-8 pb-8 overflow-y-auto">
 
-          {/* Header */}
+          {}
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8 mt-6">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 high-contrast:text-yellow-400">My Students</h1>
@@ -162,7 +162,7 @@ const ManageStudents = () => {
             </button>
           </div>
 
-          {/* Add student form */}
+          {}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8 high-contrast:bg-gray-900 high-contrast:border-gray-800">
             <h2 className="text-lg font-bold text-gray-900 mb-4 high-contrast:text-white">Add Student by Email</h2>
             <form onSubmit={handleAddStudent} className="flex flex-col sm:flex-row gap-3">
@@ -187,7 +187,7 @@ const ManageStudents = () => {
             <p className="mt-2 text-xs text-gray-400 high-contrast:text-gray-500">Only emails of registered students will be accepted.</p>
           </div>
 
-          {/* Desktop Students Table */}
+          {}
           <div className="hidden sm:block bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-10 high-contrast:bg-gray-900 high-contrast:border-gray-800">
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-100 high-contrast:bg-gray-800 high-contrast:border-gray-700">
@@ -221,7 +221,7 @@ const ManageStudents = () => {
             </table>
           </div>
 
-          {/* Mobile Student Cards */}
+          {}
           <div className="space-y-3 sm:hidden mb-10">
             {students.length === 0 ? (
               <div className="bg-white rounded-2xl border border-gray-100 py-12 text-center text-gray-400 high-contrast:bg-gray-900 high-contrast:border-gray-800 high-contrast:text-gray-500">
@@ -243,7 +243,7 @@ const ManageStudents = () => {
             ))}
           </div>
 
-          {/* Assigned Tasks list */}
+          {}
           <h2 className="text-xl font-bold text-gray-900 mb-4 high-contrast:text-white">Assigned Tasks</h2>
           {tasks.length === 0 ? (
             <div className="bg-white rounded-2xl border border-gray-100 py-12 text-center text-gray-400 high-contrast:bg-gray-900 high-contrast:border-gray-800 high-contrast:text-gray-500">
@@ -281,7 +281,7 @@ const ManageStudents = () => {
         </main>
       </div>
 
-      {/* Assign Task Modal */}
+      {}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto high-contrast:bg-gray-900 high-contrast:border high-contrast:border-gray-700">

@@ -11,10 +11,10 @@ export const useTextToSpeech = () => {
       setAppVoices(synthesisRef.current.getVoices());
     };
     
-    // Initial load
+    
     updateVoices();
     
-    // Event listener for when voices change (browsers load them async)
+    
     synthesisRef.current.onvoiceschanged = updateVoices;
 
     return () => {
@@ -35,7 +35,7 @@ export const useTextToSpeech = () => {
         setIsSpeaking(false);
     };
 
-    // Try to pick a good voice
+    
     const preferredVoice = appVoices.find(voice => voice.name.includes("Google US English") || voice.name.includes("Samantha"));
     if (preferredVoice) utterance.voice = preferredVoice;
 

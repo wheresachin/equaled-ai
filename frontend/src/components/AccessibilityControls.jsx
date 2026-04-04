@@ -17,21 +17,21 @@ const AccessibilityControls = () => {
     captionsEnabled, toggleCaptions,
     eyeTrackingEnabled, toggleEyeTracking, eyeTrackingStatus,
     handTrackingEnabled, toggleHandTracking, handTrackingStatus,
-    voiceEnabled, toggleVoice, // Added voice controls
+    voiceEnabled, toggleVoice, 
   } = useAccessibility();
 
   return (
     <div className="fixed right-4 top-24 z-50 flex flex-col gap-2 p-2 bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200 w-16 items-center transition-all hover:w-64 hover:items-stretch group overflow-hidden high-contrast:bg-black high-contrast:border-yellow-400">
       
-      {/* Collapsed Icon */}
+      {}
       <button className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 high-contrast:bg-yellow-400 high-contrast:text-black">
         <Activity size={24} />
       </button>
 
-      {/* Expanded Controls */}
+      {}
       <div className="hidden group-hover:flex flex-col gap-4 p-2 w-full animate-in fade-in slide-in-from-right-10 duration-200">
         
-        {/* Mode Selection */}
+        {}
         <div className="space-y-2">
           <h3 className="text-xs font-bold text-gray-500 uppercase high-contrast:text-yellow-400">Assistive Mode</h3>
           <div className="grid grid-cols-2 gap-2">
@@ -59,7 +59,7 @@ const AccessibilityControls = () => {
 
         <div className="border-t border-gray-200 my-1 high-contrast:border-gray-700" />
 
-        {/* Font Size */}
+        {}
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium high-contrast:text-white">Text Size</span>
           <div className="flex bg-gray-100 rounded-lg p-1 high-contrast:bg-gray-800">
@@ -73,9 +73,9 @@ const AccessibilityControls = () => {
           </div>
         </div>
 
-        {/* Toggles */}
+        {}
         <div className="space-y-2">
-          {/* High Contrast */}
+          {}
           <button
             onClick={toggleContrast}
             className={`w-full flex items-center justify-between p-2 rounded-lg text-sm transition-colors ${
@@ -86,7 +86,7 @@ const AccessibilityControls = () => {
             <Moon size={16} />
           </button>
 
-          {/* Focus Mode */}
+          {}
           <button
             onClick={toggleFocusMode}
             className={`w-full flex items-center justify-between p-2 rounded-lg text-sm transition-colors ${
@@ -97,7 +97,7 @@ const AccessibilityControls = () => {
             <Brain size={16} />
           </button>
 
-          {/* Captions */}
+          {}
           <button
             onClick={toggleCaptions}
             className={`w-full flex items-center justify-between p-2 rounded-lg text-sm transition-colors ${
@@ -108,7 +108,7 @@ const AccessibilityControls = () => {
             <Ear size={16} />
           </button>
 
-          {/* ── Eye Tracker ─────────────────────────────────── */}
+          {}
           <button
             id="eye-tracker-btn"
             onClick={toggleEyeTracking}
@@ -133,7 +133,7 @@ const AccessibilityControls = () => {
             <p className="text-xs text-orange-600 px-1">Camera denied. Check browser settings.</p>
           )}
 
-          {/* ── Hand Control ─────────────────────────────────── */}
+          {}
           <button
             id="hand-tracker-btn"
             onClick={toggleHandTracking}
@@ -160,7 +160,7 @@ const AccessibilityControls = () => {
             <p className="text-xs text-orange-600 px-1">Camera denied. Check browser settings.</p>
           )}
 
-          {/* ── Voice Control ─────────────────────────────────── */}
+          {}
           <button
             onClick={toggleVoice}
             className={`w-full flex items-center justify-between p-2 rounded-lg text-sm transition-colors ${

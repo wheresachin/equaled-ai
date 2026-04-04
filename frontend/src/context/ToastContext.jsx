@@ -1,9 +1,3 @@
-/**
- * ToastContext.jsx
- * Global toast notification system — success, error, info types.
- * Usage: const { showToast } = useToast();
- *        showToast('Login successful!', 'success');
- */
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { CheckCircle2, XCircle, Info, X } from 'lucide-react';
 
@@ -47,7 +41,7 @@ export const ToastProvider = ({ children }) => {
     <ToastContext.Provider value={{ showToast }}>
       {children}
 
-      {/* Toast Container */}
+      {}
       <div className="fixed top-4 right-4 z-[9999999] flex flex-col gap-3 pointer-events-none"
         style={{ maxWidth: '360px' }}>
         {toasts.map(toast => (

@@ -4,7 +4,7 @@ import { Mic, MicOff, Bot, ArrowLeft, Loader2, Volume2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import API_BASE from '../utils/api';
 
-// ── State constants ────────────────────────────────────────────────────────
+
 const STATE = {
   IDLE:      'idle',
   LISTENING: 'listening',
@@ -85,7 +85,7 @@ const Bubble = ({ role, text }) => (
   </div>
 );
 
-// ── Main page ──────────────────────────────────────────────────────────────
+
 const TalkToAI = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -104,12 +104,12 @@ const TalkToAI = () => {
     if (user && user.role !== 'student') navigate('/dashboard');
   }, [user, navigate]);
 
-  // Auto-scroll to latest message
+  
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, interimText]);
 
-  // ── Send to Gemini via backend ───────────────────────────────────────────
+  
   const askAI = useCallback(async (userMessage) => {
     setAppState(STATE.THINKING);
     setInterimText('');
@@ -149,14 +149,14 @@ const TalkToAI = () => {
     }
   }, []);
 
-  // ── Start microphone ────────────────────────────────────────────────────
+  
   const startListening = useCallback(() => {
     if (!SpeechRecognition || isListening.current) return;
 
     const rec = new SpeechRecognition();
     rec.lang           = 'hi-IN';
     rec.interimResults = true;
-    rec.continuous     = false; // One utterance at a time
+    rec.continuous     = false; 
 
     rec.onstart = () => {
       isListening.current = true;
@@ -195,7 +195,7 @@ const TalkToAI = () => {
     rec.start();
   }, [askAI]);
 
-  // ── Stop microphone ─────────────────────────────────────────────────────
+  
   const stopListening = useCallback(() => {
     if (recognitionRef.current) {
       try { recognitionRef.current.stop(); } catch {}
@@ -248,7 +248,7 @@ const TalkToAI = () => {
 
   return (
     <div className="h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex flex-col overflow-hidden">
-      {/* Header */}
+      {}
       <header className="flex items-center gap-3 px-6 py-4 bg-white/80 backdrop-blur border-b border-gray-100 flex-shrink-0">
         <button
           onClick={() => navigate('/dashboard')}
@@ -276,10 +276,10 @@ const TalkToAI = () => {
         </div>
       </header>
 
-      {/* Main area — mic centered, chat scrolls above */}
+      {}
       <div className="flex-1 flex flex-col overflow-hidden relative">
 
-        {/* Chat history — scrollable, only shown when messages exist */}
+        {}
         {(messages.length > 0 || interimText || appState === STATE.THINKING || errorMsg) && (
           <div className="flex-1 overflow-y-auto px-4 py-4 max-w-2xl w-full mx-auto">
             {messages.map((msg, i) => (
@@ -307,10 +307,10 @@ const TalkToAI = () => {
           </div>
         )}
 
-        {/* ── MIC — always centered in remaining space ── */}
+        {}
         <div className="flex-1 flex flex-col items-center justify-center gap-5 py-8">
 
-          {/* Welcome text when no conversation yet */}
+          {}
           {messages.length === 0 && !interimText && appState !== STATE.THINKING && (
             <div className="text-center mb-4">
               <h2 className="text-xl font-bold text-gray-700">Hello, {user?.name?.split(' ')[0]}! 👋</h2>
@@ -318,21 +318,21 @@ const TalkToAI = () => {
             </div>
           )}
 
-          {/* State label */}
+          {}
           <p className="text-sm font-semibold tracking-wide h-5 text-center
             text-gray-500">
             {cfg.label}
           </p>
 
-          {/* Mic Button */}
+          {}
           <div className="relative flex items-center justify-center">
-            {/* Outer glow */}
+            {}
             {(appState === STATE.LISTENING || appState === STATE.SPEAKING) && (
               <span className={`absolute w-40 h-40 rounded-full animate-ping opacity-15
                 ${appState === STATE.LISTENING ? 'bg-indigo-400' : 'bg-green-400'}`}
               />
             )}
-            {/* Middle ring */}
+            {}
             {(appState === STATE.LISTENING || appState === STATE.SPEAKING) && (
               <span className={`absolute w-32 h-32 rounded-full border-4 animate-pulse opacity-25
                 ${appState === STATE.LISTENING ? 'border-indigo-400' : 'border-green-400'}`}
@@ -361,7 +361,7 @@ const TalkToAI = () => {
             </button>
           </div>
 
-          {/* Sub-label */}
+          {}
           <p className="text-xs text-gray-400 h-4 text-center">
             {appState === STATE.IDLE      ? 'Tap the mic and speak' : ''}
             {appState === STATE.LISTENING ? 'Listening — tap to cancel' : ''}

@@ -15,7 +15,7 @@ export const useSpeechToText = ({ lang = 'hi-IN' } = {}) => {
     window.dispatchEvent(new CustomEvent('equaled:stt-start'));
 
     const rec = new SpeechRecognition();
-    rec.continuous      = false;   // Single answer capture
+    rec.continuous      = false;   
     rec.interimResults  = true;
     rec.lang            = lang;
 
@@ -23,7 +23,7 @@ export const useSpeechToText = ({ lang = 'hi-IN' } = {}) => {
     rec.onend    = () => {
       setIsListening(false);
       recognitionRef.current = null;
-      // Resume global voice assistant
+      
       window.dispatchEvent(new CustomEvent('equaled:stt-end'));
     };
     rec.onerror  = (e) => {

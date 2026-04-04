@@ -23,7 +23,7 @@ const Sidebar = ({ isOpen, onClose, isCollapsed, setIsCollapsed }) => {
 
   return (
     <>
-      {/* Mobile overlay backdrop */}
+      {}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black/40 z-20 md:hidden"
@@ -43,7 +43,7 @@ const Sidebar = ({ isOpen, onClose, isCollapsed, setIsCollapsed }) => {
           ${isCollapsed ? 'md:w-20' : 'md:w-64'}
         `}
       >
-        {/* Toggle button - Desktop only */}
+        {}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
           className="hidden md:flex absolute -right-3 top-20 bg-white border border-gray-200 rounded-full p-1 shadow-sm hover:bg-gray-50 z-40 high-contrast:bg-black high-contrast:border-yellow-400 high-contrast:text-yellow-400"
@@ -52,7 +52,7 @@ const Sidebar = ({ isOpen, onClose, isCollapsed, setIsCollapsed }) => {
           {isCollapsed ? <ChevronsRight size={18} /> : <ChevronsLeft size={18} />}
         </button>
 
-        {/* Close button — mobile only */}
+        {}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 md:hidden"
