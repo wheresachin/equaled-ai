@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { processCommand, getFeedback, INTENTS } from '../services/commandProcessor';
 import { speak } from '../services/textToSpeech';
+import { resolveVoiceIntent as resolveVoiceIntentWithSarvam } from '../services/voiceIntentService';
 
 const SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -28,6 +29,7 @@ export const useVoiceControl = ({
   const isRunning = useRef(false);
   const shouldBeRunning = useRef(enabled);
   const lastCommandAt = useRef(0);
+  const resolvingFinalIntentRef = useRef(false);
   const navigate = useNavigate();
   const userRef = useRef(user);
   useEffect(() => { userRef.current = user; }, [user]);
@@ -53,6 +55,62 @@ export const useVoiceControl = ({
 
   useEffect(() => { shouldBeRunning.current = enabled; }, [enabled]);
 
+  const navigateByIntent = useCallback((intent) => {
+    const role = userRef.current?.role;
+
+    switch (intent) {
+      case INTENTS.NAVIGATE_HOME:
+        navigate(role === 'student' ? '/home' : '/');
+        return true;
+      case INTENTS.NAVIGATE_DASHBOARD:
+        if (role === 'admin') navigate('/admin-dashboard');
+        else if (role === 'teacher') navigate('/teacher-dashboard');
+        else navigate('/dashboard');
+        return true;
+      case INTENTS.NAVIGATE_LESSONS:
+        if (role === 'teacher') navigate('/manage-lessons');
+        else navigate('/dashboard');
+        return true;
+      case INTENTS.NAVIGATE_LOGIN:
+        navigate('/login');
+        return true;
+      case INTENTS.NAVIGATE_TALK_TO_AI:
+        if (role === 'student') navigate('/talk-to-ai');
+        else if (role === 'admin') navigate('/admin-dashboard');
+        else if (role === 'teacher') navigate('/teacher-dashboard');
+        else navigate('/login');
+        return true;
+      case INTENTS.NAVIGATE_BACK:
+        navigate(-1);
+        return true;
+      default:
+        return false;
+    }
+  }, [navigate]);
+
+  const resolveFinalIntent = useCallback(async (alternatives) => {
+    const phrases = alternatives
+      .filter((value) => typeof value === 'string')
+      .map((value) => value.trim())
+      .filter(Boolean);
+
+    try {
+      const aiIntent = await resolveVoiceIntentWithSarvam(phrases);
+      if (Object.values(INTENTS).includes(aiIntent)) {
+        return aiIntent;
+      }
+    } catch (error) {
+      console.warn('[Voice] Sarvam intent fallback failed:', error.message);
+    }
+
+    for (const phrase of phrases) {
+      const localIntent = processCommand(phrase);
+      if (localIntent) return localIntent;
+    }
+
+    return null;
+  }, []);
+
   const executeIntent = useCallback((intent, rawLang) => {
     const feedbackLang = rawLang?.startsWith('hi') ? 'hi' : 'en';
     const acc = accRef.current;
@@ -77,12 +135,14 @@ export const useVoiceControl = ({
         return;
 
       
-      case INTENTS.NAVIGATE_HOME: navigate(userRef.current ? '/home' : '/'); break;
-      case INTENTS.NAVIGATE_DASHBOARD: navigate('/dashboard'); break;
-      case INTENTS.NAVIGATE_LESSONS: navigate('/lesson/1'); break;
-      case INTENTS.NAVIGATE_LOGIN: navigate('/login'); break;
-      case INTENTS.NAVIGATE_TALK_TO_AI: navigate('/talk-to-ai'); break;
-      case INTENTS.NAVIGATE_BACK: window.history.back(); break;
+      case INTENTS.NAVIGATE_HOME:
+      case INTENTS.NAVIGATE_DASHBOARD:
+      case INTENTS.NAVIGATE_LESSONS:
+      case INTENTS.NAVIGATE_LOGIN:
+      case INTENTS.NAVIGATE_TALK_TO_AI:
+      case INTENTS.NAVIGATE_BACK:
+        navigateByIntent(intent);
+        break;
 
       
       case INTENTS.INCREASE_FONT: acc.increaseFont?.(); break;
@@ -137,7 +197,7 @@ export const useVoiceControl = ({
     }
     onFeedbackRef.current?.(msg, 'success');
     speak(msg, feedbackLang === 'hi' ? 'hi-IN' : 'en-US');
-  }, [navigate, setIsAwake]);
+  }, [navigateByIntent, setIsAwake]);
 
   const executeIntentRef = useRef(executeIntent);
   useEffect(() => { executeIntentRef.current = executeIntent; }, [executeIntent]);
@@ -208,29 +268,36 @@ export const useVoiceControl = ({
         if (intent === INTENTS.ENABLE_VOICE && !isAwakeRef.current) {
           lastCommandAt.current = now;
           executeIntentRef.current?.(intent, langRef.current);
-        } else if (isAwakeRef.current) {
-          lastCommandAt.current = now;
-          executeIntentRef.current?.(intent, langRef.current);
         }
         return;
       }
 
       console.log('[Voice] Final Speech:', text);
 
-      let intent = null;
+      if (resolvingFinalIntentRef.current) return;
+
+      const alternatives = [];
       for (let i = 0; i < latest.length; i++) {
-        intent = processCommand(latest[i].transcript);
-        if (intent) break;
+        if (latest[i]?.transcript) alternatives.push(latest[i].transcript);
       }
 
-      if (intent) {
-        lastCommandAt.current = now;
-        executeIntentRef.current?.(intent, langRef.current);
-      } else if (isAwakeRef.current) {
-        const msg = getFeedback(null, langRef.current.startsWith('hi') ? 'hi' : 'en');
-        onFeedbackRef.current?.(msg, 'error');
-        speak(msg, langRef.current.startsWith('hi') ? 'hi-IN' : 'en-US');
-      }
+      resolvingFinalIntentRef.current = true;
+      void (async () => {
+        try {
+          const intent = await resolveFinalIntent(alternatives);
+
+          if (intent) {
+            lastCommandAt.current = now;
+            executeIntentRef.current?.(intent, langRef.current);
+          } else if (isAwakeRef.current) {
+            const msg = getFeedback(null, langRef.current.startsWith('hi') ? 'hi' : 'en');
+            onFeedbackRef.current?.(msg, 'error');
+            speak(msg, langRef.current.startsWith('hi') ? 'hi-IN' : 'en-US');
+          }
+        } finally {
+          resolvingFinalIntentRef.current = false;
+        }
+      })();
     };
 
     recognitionRef.current = rec;
@@ -240,7 +307,7 @@ export const useVoiceControl = ({
       console.error('[Voice] Fast recovery start error:', e);
       isRunning.current = false;
     }
-  }, [supported, permDenied]);
+  }, [supported, permDenied, resolveFinalIntent]);
 
   const stopRecognition = useCallback(() => {
     console.log('[Voice] Stopping...');
