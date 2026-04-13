@@ -165,6 +165,79 @@ const isOverlayElement = (el) => {
   return false;
 };
 
+const CLICKABLE_SELECTOR = [
+  'a[href]',
+  'button',
+  'input:not([type="hidden"])',
+  'select',
+  'textarea',
+  'label',
+  'summary',
+  '[role="button"]',
+  '[role="link"]',
+  '[tabindex]:not([tabindex="-1"])',
+].join(', ');
+
+const isDisabledElement = (el) =>
+  !!(
+    el?.hasAttribute?.('disabled') ||
+    el?.getAttribute?.('aria-disabled') === 'true'
+  );
+
+const getClickableTarget = (el) => {
+  if (!el || isOverlayElement(el)) return null;
+
+  const directMatch = el.closest?.(CLICKABLE_SELECTOR);
+  if (directMatch && !isDisabledElement(directMatch) && !isOverlayElement(directMatch)) {
+    return directMatch;
+  }
+
+  let node = el;
+  while (node && node !== document.body) {
+    if (!isDisabledElement(node) && (
+      typeof node.onclick === 'function' ||
+      node.getAttribute?.('role') === 'button' ||
+      node.getAttribute?.('role') === 'link'
+    )) {
+      return node;
+    }
+    node = node.parentElement;
+  }
+
+  return null;
+};
+
+const fireSyntheticClick = (target) => {
+  if (!target || isDisabledElement(target)) return;
+
+  target.focus?.({ preventScroll: true });
+
+  if (window.PointerEvent) {
+    target.dispatchEvent(new PointerEvent('pointerdown', {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+    }));
+  }
+
+  ['mousedown', 'mouseup'].forEach((type) => {
+    target.dispatchEvent(new MouseEvent(type, {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+    }));
+  });
+
+  if (typeof target.click === 'function') target.click();
+  else {
+    target.dispatchEvent(new MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+    }));
+  }
+};
+
 // ─── Hook ────────────────────────────────────────────────────────────────────
 export const useEyeTracking = (enabled) => {
   const [status, setStatus]  = useState('idle');
@@ -175,6 +248,7 @@ export const useEyeTracking = (enabled) => {
   const gazeHist    = useRef([]);
   const scrollCD    = useRef(false);
   const backCD      = useRef(false);
+  const edgeActionRef = useRef({ type: null, startTime: 0 });
   const dwellRef    = useRef({ x: 0, y: 0, startTime: 0, active: false });
   const watchdogRef = useRef(null);
   const lastFrameTs = useRef(0);
@@ -338,35 +412,61 @@ export const useEyeTracking = (enabled) => {
 
     const vh = window.innerHeight;
     const vw = window.innerWidth;
+    const EDGE_DWELL_MS = 900;
+    const EDGE_ZONE_TOP = vh * 0.12;
+    const EDGE_ZONE_BOTTOM = vh * 0.88;
+    const EDGE_ZONE_LEFT = vw * 0.08;
 
     // ── Scroll Up / Down zones (top/bottom 12% of screen) ─────────────────
-    if (!scrollCD.current) {
-      if (y < vh * 0.12) {
-        doScroll(-200);
-        scrollCD.current = true;
-        setTimeout(() => { scrollCD.current = false; }, 400);
-        flashScrollZone('up');
-        return; // Skip dwell click when in scroll zone
-      } else if (y > vh * 0.88) {
-        doScroll(200);
-        scrollCD.current = true;
-        setTimeout(() => { scrollCD.current = false; }, 400);
-        flashScrollZone('down');
-        return;
-      }
-    }
+    let edgeAction = null;
+    if (y < EDGE_ZONE_TOP && !scrollCD.current) edgeAction = 'scroll-up';
+    else if (y > EDGE_ZONE_BOTTOM && !scrollCD.current) edgeAction = 'scroll-down';
+    else if (x < EDGE_ZONE_LEFT && !backCD.current) edgeAction = 'back';
 
-    // ── Back navigation zone (left 6% of screen) ─────────────────────────
-    if (x < vw * 0.06 && !backCD.current) {
-      backCD.current = true;
-      flashBackZone();
-      setTimeout(() => {
-        window.history.back();
-        backCD.current = false;
-      }, 600);
+    if (edgeAction) {
+      const now = performance.now();
+      if (edgeActionRef.current.type !== edgeAction) {
+        edgeActionRef.current = { type: edgeAction, startTime: now };
+      }
+
+      const elapsed = now - edgeActionRef.current.startTime;
+      const pct = Math.min(elapsed / EDGE_DWELL_MS, 1);
+      const deg = Math.round(pct * 360);
+
+      cursor.style.background = `conic-gradient(rgba(245,158,11,0.85) ${deg}deg, rgba(239,68,68,0.12) ${deg}deg)`;
+      cursor.style.border = '3px solid rgba(245,158,11,1)';
+      cursor.style.boxShadow = `0 0 ${20 + pct * 20}px rgba(245,158,11,0.8)`;
+      cursor.style.transform = `translate(-50%,-50%) scale(${1 + pct * 0.15})`;
+
+      if (elapsed >= EDGE_DWELL_MS) {
+        if (edgeAction === 'scroll-up') {
+          doScroll(-320);
+          flashScrollZone('up');
+          scrollCD.current = true;
+          setTimeout(() => { scrollCD.current = false; }, 650);
+        } else if (edgeAction === 'scroll-down') {
+          doScroll(320);
+          flashScrollZone('down');
+          scrollCD.current = true;
+          setTimeout(() => { scrollCD.current = false; }, 650);
+        } else if (edgeAction === 'back') {
+          flashBackZone();
+          backCD.current = true;
+          setTimeout(() => {
+            window.history.back();
+            backCD.current = false;
+          }, 150);
+        }
+
+        edgeActionRef.current = { type: null, startTime: 0 };
+        dwellRef.current = { x, y, startTime: performance.now(), active: false };
+      }
       return;
     }
 
+    edgeActionRef.current = { type: null, startTime: 0 };
+
+    // ── Back navigation zone (left 6% of screen) ─────────────────────────
     // ── Dwell-to-click logic ───────────────────────────────────────────────
     const DWELL_MS     = 1800; // 1.8s dwell
     const DWELL_RADIUS = 80;   // px movement tolerance
@@ -403,21 +503,8 @@ export const useEyeTracking = (enabled) => {
         cursor.style.boxShadow = '0 0 50px rgba(99,102,241,1)';
 
         const el = document.elementFromPoint(x, y);
-        if (el && !isOverlayElement(el)) {
-          // Find the nearest clickable ancestor
-          let target = el;
-          while (target && target !== document.body) {
-            const tag = target.tagName.toLowerCase();
-            if (tag === 'a' || tag === 'button' || tag === 'input' ||
-                tag === 'select' || tag === 'textarea' ||
-                target.getAttribute('role') === 'button' ||
-                target.onclick || target.getAttribute('tabindex') !== null) {
-              break;
-            }
-            target = target.parentElement;
-          }
-          (target || el).click();
-        }
+        const target = getClickableTarget(el);
+        if (target) fireSyntheticClick(target);
 
         // Reset after click visual
         setTimeout(() => {
@@ -465,6 +552,7 @@ export const useEyeTracking = (enabled) => {
     gazeHist.current   = [];
     scrollCD.current   = false;
     backCD.current     = false;
+    edgeActionRef.current = { type: null, startTime: 0 };
     dwellRef.current   = { x: 0, y: 0, startTime: 0, active: false };
     lastFrameTs.current = 0;
 

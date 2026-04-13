@@ -58,10 +58,18 @@ const TalkToAI = () => {
   const audioContextRef  = useRef(null);
   const maxDurationTimerRef = useRef(null);
 
+  const getHomeRouteForRole = useCallback((role) => {
+    if (role === 'admin') return '/admin-dashboard';
+    if (role === 'teacher') return '/teacher-dashboard';
+    return '/dashboard';
+  }, []);
+
   // Redirect non-students
   useEffect(() => {
-    if (user && user.role !== 'student') navigate('/dashboard');
-  }, [user, navigate]);
+    if (user && user.role !== 'student') {
+      navigate(getHomeRouteForRole(user.role), { replace: true });
+    }
+  }, [user, navigate, getHomeRouteForRole]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });

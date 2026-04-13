@@ -74,6 +74,20 @@ const loginUser = async (req, res) => {
 };
 
 
+const getCurrentUser = async (req, res) => {
+    if (!req.user) {
+        return res.status(401).json({ message: 'Not authorized' });
+    }
+
+    res.json({
+        _id: req.user.id,
+        name: req.user.name,
+        email: req.user.email,
+        role: req.user.role,
+        disabilityType: req.user.disabilityType,
+    });
+};
+
 const forgotPassword = async (req, res) => {
     const { email } = req.body;
     try {
@@ -117,4 +131,4 @@ const forgotPassword = async (req, res) => {
     }
 };
 
-module.exports = { registerUser, loginUser, forgotPassword };
+module.exports = { registerUser, loginUser, getCurrentUser, forgotPassword };

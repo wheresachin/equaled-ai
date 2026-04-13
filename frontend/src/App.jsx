@@ -29,6 +29,19 @@ import ForgotPassword from './pages/ForgotPassword';
 import Api from './pages/Api';
 
 
+const StudentOnlyRoute = () => {
+  const { user, loading } = useAuth();
+
+  if (loading) return null;
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role === 'teacher') return <Navigate to="/teacher-dashboard" replace />;
+  if (user.role === 'admin') return <Navigate to="/admin-dashboard" replace />;
+  if (user.role !== 'student') return <Navigate to="/" replace />;
+
+  return <Layout />;
+};
+
+
 const EyeTrackingActivator = () => {
   const { eyeTrackingEnabled, toggleEyeTracking, setEyeTrackingStatus } = useAccessibility();
   const { user } = useAuth();
@@ -108,7 +121,7 @@ function App() {
                 <Route path="/submission-review" element={<SubmissionReview />} />
                 <Route path="/manage-students" element={<ManageStudents />} />
 
-                <Route element={<Layout />}>
+                <Route element={<StudentOnlyRoute />}>
                   <Route path="/home"       element={<Home />} />
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/lesson/:id" element={<Lesson />} />

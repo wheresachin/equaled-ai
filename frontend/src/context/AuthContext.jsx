@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import API_BASE from '../utils/api';
 
 const AuthContext = createContext();
 
@@ -11,16 +12,59 @@ export const AuthProvider = ({ children }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
+        let isMounted = true;
+
+        const bootstrapAuth = async () => {
+            const storedUser = localStorage.getItem('user');
+            if (!storedUser) {
+                if (isMounted) setLoading(false);
+                return;
+            }
+
             try {
-                setUser(JSON.parse(storedUser));
+                const parsedUser = JSON.parse(storedUser);
+
+                if (!parsedUser?.token) {
+                    localStorage.removeItem('user');
+                    if (isMounted) setUser(null);
+                    return;
+                }
+
+                if (isMounted) setUser(parsedUser);
+
+                try {
+                    const response = await fetch(`${API_BASE}/api/auth/me`, {
+                        headers: {
+                            Authorization: `Bearer ${parsedUser.token}`,
+                        },
+                    });
+
+                    if (response.ok) {
+                        const profile = await response.json();
+                        const syncedUser = { ...parsedUser, ...profile, token: parsedUser.token };
+                        localStorage.setItem('user', JSON.stringify(syncedUser));
+                        if (isMounted) setUser(syncedUser);
+                    } else if (response.status === 401) {
+                        localStorage.removeItem('user');
+                        if (isMounted) setUser(null);
+                    }
+                } catch (error) {
+                    console.warn('Could not refresh auth session:', error);
+                }
             } catch (error) {
                 console.error("Failed to parse user data:", error);
                 localStorage.removeItem('user');
+                if (isMounted) setUser(null);
+            } finally {
+                if (isMounted) setLoading(false);
             }
-        }
-        setLoading(false);
+        };
+
+        bootstrapAuth();
+
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     const login = (userData) => {
