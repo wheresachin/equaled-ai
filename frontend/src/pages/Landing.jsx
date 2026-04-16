@@ -14,41 +14,67 @@ const Landing = () => {
             <Navbar />
 
             { }
-            <section className="pt-32 pb-20 px-4 max-w-7xl mx-auto text-center relative overflow-hidden">
+            <section className="pt-32 pb-20 px-4 max-w-7xl mx-auto relative overflow-hidden">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-blue-50/50 rounded-full blur-3xl -z-10 high-contrast:hidden"></div>
 
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-blue-700 font-bold text-sm mb-8 border border-blue-100 high-contrast:bg-yellow-400 high-contrast:text-black high-contrast:border-none animate-in fade-in slide-in-from-bottom-5 duration-700">
-                    <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-                    </span>
-                    AI-Powered Inclusive Learning
+                <div className="grid lg:grid-cols-2 gap-12 items-center">
+                    <div className="text-left">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-blue-700 font-bold text-sm mb-8 border border-blue-100 high-contrast:bg-yellow-400 high-contrast:text-black high-contrast:border-none animate-in fade-in slide-in-from-bottom-5 duration-700">
+                            <span className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                            </span>
+                            AI-Powered Inclusive Learning
+                        </div>
+
+                        <h1 className="text-5xl md:text-6xl font-extrabold mb-8 tracking-tight leading-[1.1] text-gray-900 high-contrast:text-yellow-400 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
+                            Equal Learning. <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-indigo-600 to-violet-600 high-contrast:text-white">Equal Opportunity.</span>
+                        </h1>
+
+                        <p className="text-xl text-gray-600 mb-12 high-contrast:text-gray-300 leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
+                            Accessible education designed for every ability. EqualEd adapts in real-time to support visual, hearing, motor, and cognitive needs.
+                        </p>
+
+                        <div className="flex flex-col sm:flex-row gap-4 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
+                            <button
+                                onClick={() => navigate('/signup')}
+                                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-full text-base font-bold transition-all transform hover:scale-105 shadow-lg hover:shadow-xl hover:shadow-blue-200 flex items-center justify-center gap-2 high-contrast:bg-yellow-400 high-contrast:text-black"
+                            >
+                                Start Learning Now
+                            </button>
+                            <button
+                                onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
+                                className="text-blue-600 border border-blue-200 hover:border-blue-600 px-8 py-3.5 rounded-full text-base font-bold transition-all bg-white hover:bg-blue-50 high-contrast:bg-transparent high-contrast:text-white high-contrast:border-white"
+                            >
+                                How It Works
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="relative animate-in fade-in zoom-in duration-1000">
+                        <div className="rounded-3xl overflow-hidden shadow-2xl shadow-blue-100 high-contrast:shadow-none">
+                            <img
+                                src="/hero-students.png"
+                                alt="Two students learning together with EqualEd"
+                                className="w-full h-[460px] object-cover object-top"
+                            />
+                        </div>
+                        {/* Floating Accessibility Score card */}
+                        <div className="absolute -bottom-4 left-6 bg-white rounded-2xl shadow-xl px-5 py-4 min-w-[210px] high-contrast:bg-gray-900 high-contrast:border high-contrast:border-gray-700">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center flex-shrink-0">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                                </div>
+                                <span className="text-sm font-bold text-gray-800 high-contrast:text-white">Accessibility Score</span>
+                            </div>
+                            <div className="w-full bg-gray-100 rounded-full h-1.5 mb-2 overflow-hidden">
+                                <div className="bg-blue-600 h-full rounded-full" style={{ width: '98%' }}></div>
+                            </div>
+                            <p className="text-blue-600 font-bold text-sm high-contrast:text-yellow-400">98% Compliant</p>
+                        </div>
+                    </div>
                 </div>
-
-                <h1 className="text-4xl md:text-5xl font-extrabold mb-8 tracking-tight leading-[1.2] text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-indigo-600 to-violet-600 high-contrast:text-yellow-400 high-contrast:bg-none animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
-                    Equal Learning. <br />
-                    Equal Opportunity.
-                </h1>
-
-                <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto mb-12 high-contrast:text-gray-300 leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
-                    Accessible education designed for every ability. EqualEd adapts in real-time to support visual, hearing, motor, and cognitive needs.
-                </p>
-
-                <div className="flex flex-col sm:flex-row gap-5 justify-center animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300">
-                    <button
-                        onClick={() => navigate('/signup')}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-full text-lg font-bold transition-all transform hover:scale-105 shadow-xl hover:shadow-2xl hover:shadow-blue-200 flex items-center justify-center gap-2 high-contrast:bg-yellow-400 high-contrast:text-black high-contrast:hover:shadow-none"
-                    >
-                        Get Started <ArrowRight size={20} />
-                    </button>
-                    <button
-                        onClick={() => navigate('#how-it-works')}
-                        className="bg-white border text-gray-700 hover:border-blue-600 hover:text-blue-600 px-10 py-4 rounded-full text-lg font-bold transition-all shadow-sm hover:shadow-lg high-contrast:bg-transparent high-contrast:text-white high-contrast:border-white high-contrast:hover:border-yellow-400 high-contrast:hover:text-yellow-400"
-                    >
-                        See How It Works
-                    </button>
-                </div>
-
             </section>
 
             { }
@@ -157,11 +183,11 @@ const Landing = () => {
                                 <div className="grid md:grid-cols-2 gap-6">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2 high-contrast:text-white">Your Name</label>
-                                        <input type="text" className="w-full px-5 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all high-contrast:bg-gray-900 high-contrast:text-white high-contrast:border-gray-700" placeholder="John Doe" />
+                                        <input type="text" className="w-full px-5 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all high-contrast:bg-gray-900 high-contrast:text-white high-contrast:border-gray-700" placeholder="Sachin" />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2 high-contrast:text-white">Email Address</label>
-                                        <input type="email" className="w-full px-5 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all high-contrast:bg-gray-900 high-contrast:text-white high-contrast:border-gray-700" placeholder="john@example.com" />
+                                        <input type="email" className="w-full px-5 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all high-contrast:bg-gray-900 high-contrast:text-white high-contrast:border-gray-700" placeholder="sachin@gmail.com" />
                                     </div>
                                 </div>
                                 <div>

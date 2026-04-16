@@ -52,9 +52,9 @@ export const AccessibilityProvider = ({ children }) => {
         setCaptionsEnabled(false);
         setFocusMode(false);
         setEyeTrackingEnabled(false);
-        setHandTrackingEnabled(true);
-        setVoiceEnabled(false);
-        setIsAwake(false);
+        setHandTrackingEnabled(false);
+        setVoiceEnabled(true);
+        setIsAwake(true);
         break;
       case "cognitive":
         setFocusMode(true);

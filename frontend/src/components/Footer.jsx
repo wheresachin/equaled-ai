@@ -9,7 +9,7 @@ const Footer = () => {
           <div className="col-span-1 md:col-span-1">
             <h3 className="text-2xl font-bold text-white mb-4 high-contrast:text-yellow-400 flex items-center gap-2">
                <div className="bg-blue-600 p-1.5 rounded-lg high-contrast:bg-yellow-400">
-                 <span className="text-white font-bold text-sm high-contrast:text-black">Eq</span>
+                 <span className="text-white font-bold text-sm high-contrast:text-black">EQ</span>
                </div>
                EqualEd
             </h3>
@@ -54,11 +54,11 @@ const Footer = () => {
               </li>
               <li className="flex gap-3">
                  <span className="text-blue-500">📞</span> 
-                 <span>+1 (555) 123-4567</span>
+                 <span>9155337900</span>
               </li>
               <li className="flex gap-3">
                  <span className="text-blue-500">📍</span> 
-                 <span>123 Education Lane<br/>San Francisco, CA 94105</span>
+                 <span>Bharat</span>
               </li>
             </ul>
           </div>

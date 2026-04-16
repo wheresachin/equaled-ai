@@ -42,50 +42,102 @@
       Quick Profiles
     </div>
     <div class="profiles-grid">
-      <button class="profile-btn" data-profile="visual" title="Visual Impairment">
-        <span class="profile-icon">👁️</span>
-        <span>Visual</span>
+
+      <button class="profile-btn profile-visual" data-profile="visual" title="Visual Impairment">
+        <div class="profile-icon-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/>
+          </svg>
+        </div>
+        <span class="profile-name">Visual</span>
       </button>
-      <button class="profile-btn" data-profile="motor" title="Motor Impairment">
-        <span class="profile-icon">✋</span>
-        <span>Motor</span>
+
+      <button class="profile-btn profile-motor" data-profile="motor" title="Motor Impairment — Voice Control">
+        <div class="profile-icon-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="23"/>
+            <line x1="8" y1="23" x2="16" y2="23"/>
+          </svg>
+        </div>
+        <span class="profile-name">Motor</span>
       </button>
-      <button class="profile-btn" data-profile="adhd" title="ADHD / Focus">
-        <span class="profile-icon">🎯</span>
-        <span>ADHD</span>
+
+      <button class="profile-btn profile-focus" data-profile="adhd" title="Focus Mode — reduces distractions">
+        <div class="profile-icon-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <circle cx="12" cy="12" r="7" stroke-dasharray="3 2"/>
+            <circle cx="12" cy="12" r="11" stroke-dasharray="2 3" opacity="0.5"/>
+          </svg>
+        </div>
+        <span class="profile-name">Focus</span>
       </button>
-      <button class="profile-btn" data-profile="none" title="No Profile">
-        <span class="profile-icon">✕</span>
-        <span>None</span>
+
+      <button class="profile-btn profile-none" data-profile="none" title="No Profile — reset to default">
+        <div class="profile-icon-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="8" y1="8" x2="16" y2="16"/>
+            <line x1="16" y1="8" x2="8" y2="16"/>
+          </svg>
+        </div>
+        <span class="profile-name">None</span>
       </button>
+
     </div>
   </section>
 
-  <!-- ── Smart Controls (Voice only) ── -->
+  <!-- ── Smart Controls ── -->
   <section class="section smart-section">
     <div class="section-label">
       <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
       Smart Controls
     </div>
     <div class="smart-grid">
-      <button class="smart-toggle-btn" data-toggle="voiceEnabled" id="smartVoice">
-        <span class="smart-icon">🎙️</span>
+
+      <button class="smart-toggle-btn smart-voice" data-toggle="voiceEnabled" id="smartVoice">
+        <div class="smart-icon-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="23"/>
+            <line x1="8" y1="23" x2="16" y2="23"/>
+          </svg>
+        </div>
         <div class="smart-label">Voice Control</div>
         <div class="smart-desc">Speak to navigate</div>
         <div class="smart-indicator"></div>
       </button>
-      <button class="smart-toggle-btn" data-toggle="ttsEnabled" id="smartTTS">
-        <span class="smart-icon">🔊</span>
+
+      <button class="smart-toggle-btn smart-tts" data-toggle="ttsEnabled" id="smartTTS">
+        <div class="smart-icon-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+          </svg>
+        </div>
         <div class="smart-label">Text-to-Speech</div>
         <div class="smart-desc">Read page aloud</div>
         <div class="smart-indicator"></div>
       </button>
-      <button class="smart-toggle-btn" data-toggle="focusMode" id="smartFocus">
-        <span class="smart-icon">🎯</span>
+
+      <button class="smart-toggle-btn smart-focus" data-toggle="focusMode" id="smartFocus">
+        <div class="smart-icon-wrap">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <circle cx="12" cy="12" r="7" stroke-dasharray="3 2"/>
+            <circle cx="12" cy="12" r="11" stroke-dasharray="2 3" opacity="0.5"/>
+          </svg>
+        </div>
         <div class="smart-label">Focus Mode</div>
         <div class="smart-desc">Spotlight cursor</div>
         <div class="smart-indicator"></div>
       </button>
+
     </div>
   </section>
 
