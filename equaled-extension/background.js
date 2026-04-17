@@ -62,7 +62,7 @@ const PROFILES = {
     showAltText: true,
   },
   motor: {
-    fontSize: 115,
+    voiceEnabled: true,
   },
   adhd: {
     readingGuide: true,
@@ -209,7 +209,18 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       (async () => {
         const profileName = message.profile;
         const profileSettings = PROFILES[profileName] || {};
-        const merged = { ...DEFAULT_SETTINGS, ...profileSettings, activeProfile: profileName };
+
+        // For the motor profile: only layer voice control on top of current
+        // settings so nothing else is altered. All other profiles (and
+        // clearing a profile) reset settings to defaults first.
+        let merged;
+        if (profileName === 'motor') {
+          const current = await chrome.storage.sync.get(null);
+          merged = { ...DEFAULT_SETTINGS, ...current, ...profileSettings, activeProfile: profileName };
+        } else {
+          merged = { ...DEFAULT_SETTINGS, ...profileSettings, activeProfile: profileName };
+        }
+
         await chrome.storage.sync.set(merged);
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
         if (tab?.id) {
