@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardNavbar from '../components/DashboardNavbar';
 import Sidebar from '../components/Sidebar';
-import { UserPlus, Trash2, ClipboardList, X, CheckCircle, BookOpen } from 'lucide-react';
+import { UserPlus, Trash2, ClipboardList, X, CheckCircle, BookOpen, AlertCircle } from 'lucide-react';
 import API_BASE from '../utils/api';
 
 const ManageStudents = () => {
@@ -74,9 +74,9 @@ const ManageStudents = () => {
         setAddSuccess(`${data.name} added to your classroom!`);
         setTimeout(() => setAddSuccess(''), 4000);
       } else {
-        setAddError(data.message);
+        setAddError(data.message || 'Something went wrong. Please try again.');
       }
-    } catch (e) { setAddError('Could not connect to server'); }
+    } catch (e) { setAddError('Could not connect to server. Check your connection and try again.'); }
     finally { setAddLoading(false); }
   };
 
@@ -147,7 +147,7 @@ const ManageStudents = () => {
         <DashboardNavbar onMenuClick={() => setSidebarOpen(true)} />
         <main className="flex-1 pt-16 md:pt-20 px-4 sm:px-6 lg:px-8 pb-8 overflow-y-auto">
 
-          {}
+          {/* Header */}
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8 mt-6">
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 high-contrast:text-yellow-400">My Students</h1>
@@ -157,12 +157,13 @@ const ManageStudents = () => {
               onClick={openModal}
               disabled={students.length === 0 || lessons.length === 0}
               className="flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-5 py-3 rounded-xl font-bold transition-all shadow-lg disabled:opacity-40 high-contrast:bg-yellow-400 high-contrast:text-black w-full sm:w-auto"
+              title={students.length === 0 ? 'Add at least one student first' : lessons.length === 0 ? 'Create a lesson first' : ''}
             >
               <ClipboardList size={20} /> Assign Task
             </button>
           </div>
 
-          {}
+          {/* Add student form */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8 high-contrast:bg-gray-900 high-contrast:border-gray-800">
             <h2 className="text-lg font-bold text-gray-900 mb-4 high-contrast:text-white">Add Student by Email</h2>
             <form onSubmit={handleAddStudent} className="flex flex-col sm:flex-row gap-3">
@@ -182,12 +183,26 @@ const ManageStudents = () => {
                 <UserPlus size={20} /> {addLoading ? 'Adding...' : 'Add Student'}
               </button>
             </form>
-            {addError   && <p className="mt-3 text-red-600 text-sm font-medium">{addError}</p>}
-            {addSuccess && <p className="mt-3 text-green-600 text-sm font-medium flex items-center gap-1"><CheckCircle size={16}/> {addSuccess}</p>}
-            <p className="mt-2 text-xs text-gray-400 high-contrast:text-gray-500">Only emails of registered students will be accepted.</p>
+
+            {/* Error alert */}
+            {addError && (
+              <div className="mt-3 flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+                <AlertCircle size={16} className="mt-0.5 shrink-0" />
+                <span>{addError}</span>
+              </div>
+            )}
+            {/* Success message */}
+            {addSuccess && (
+              <p className="mt-3 text-green-600 text-sm font-medium flex items-center gap-1">
+                <CheckCircle size={16} /> {addSuccess}
+              </p>
+            )}
+            <p className="mt-2 text-xs text-gray-400 high-contrast:text-gray-500">
+              Only emails of registered students will be accepted.
+            </p>
           </div>
 
-          {}
+          {/* Desktop table */}
           <div className="hidden sm:block bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-10 high-contrast:bg-gray-900 high-contrast:border-gray-800">
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-100 high-contrast:bg-gray-800 high-contrast:border-gray-700">
@@ -221,7 +236,7 @@ const ManageStudents = () => {
             </table>
           </div>
 
-          {}
+          {/* Mobile cards */}
           <div className="space-y-3 sm:hidden mb-10">
             {students.length === 0 ? (
               <div className="bg-white rounded-2xl border border-gray-100 py-12 text-center text-gray-400 high-contrast:bg-gray-900 high-contrast:border-gray-800 high-contrast:text-gray-500">
@@ -243,7 +258,7 @@ const ManageStudents = () => {
             ))}
           </div>
 
-          {}
+          {/* Assigned tasks */}
           <h2 className="text-xl font-bold text-gray-900 mb-4 high-contrast:text-white">Assigned Tasks</h2>
           {tasks.length === 0 ? (
             <div className="bg-white rounded-2xl border border-gray-100 py-12 text-center text-gray-400 high-contrast:bg-gray-900 high-contrast:border-gray-800 high-contrast:text-gray-500">
@@ -281,7 +296,7 @@ const ManageStudents = () => {
         </main>
       </div>
 
-      {}
+      {/* Assign Task modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto high-contrast:bg-gray-900 high-contrast:border high-contrast:border-gray-700">
@@ -360,7 +375,12 @@ const ManageStudents = () => {
                 />
               </div>
 
-              {taskError   && <p className="text-red-600 text-sm font-medium">{taskError}</p>}
+              {taskError && (
+                <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+                  <AlertCircle size={16} className="mt-0.5 shrink-0" />
+                  <span>{taskError}</span>
+                </div>
+              )}
               {taskSuccess && <p className="text-green-600 text-sm font-medium flex items-center gap-1"><CheckCircle size={16}/> {taskSuccess}</p>}
 
               <button

@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, LayoutDashboard, BookOpen, LogOut, User, Users, CheckCircle, UserPlus, X, ChevronsLeft, ChevronsRight, Mic, MicOff, Bot } from 'lucide-react';
+import { Home, LayoutDashboard, BookOpen, LogOut, User, Users, CheckCircle, UserPlus, X, ChevronsLeft, ChevronsRight, Mic, MicOff, Bot, Video } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 
@@ -11,6 +11,7 @@ const Sidebar = ({ isOpen, onClose, isCollapsed, setIsCollapsed }) => {
   const navItems = user?.role === 'teacher' ? [
     { to: "/teacher-dashboard",  icon: <LayoutDashboard size={24} />, label: "Dashboard" },
     { to: "/manage-lessons",     icon: <BookOpen size={24} />,       label: "Manage Lessons" },
+    { to: "/lectures",           icon: <Video size={24} />,          label: "Lectures" },
     { to: "/manage-students",    icon: <UserPlus size={24} />,       label: "My Students" },
     { to: "/student-progress",   icon: <Users size={24} />,          label: "Student Progress" },
     { to: "/submission-review",  icon: <CheckCircle size={24} />,    label: "Review Work" },
@@ -18,6 +19,7 @@ const Sidebar = ({ isOpen, onClose, isCollapsed, setIsCollapsed }) => {
     { to: "/home",       icon: <Home size={24} />,            label: "Home",       end: true },
     { to: "/dashboard", icon: <LayoutDashboard size={24} />, label: "Dashboard",  end: true },
     { to: "/lesson/1",  icon: <BookOpen size={24} />,        label: "Lessons" },
+    { to: "/lectures",  icon: <Video size={24} />,            label: "Lectures" },
     { to: "/talk-to-ai", icon: <Bot size={24} />,            label: "Talk to AI" },
   ];
 

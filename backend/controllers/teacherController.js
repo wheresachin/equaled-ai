@@ -17,29 +17,38 @@ const getMyStudents = async (req, res) => {
 
 const addStudentByEmail = async (req, res) => {
     const { email } = req.body;
-    if (!email) return res.status(400).json({ message: 'Email is required' });
+    if (!email) return res.status(400).json({ message: 'Email is required.' });
+
+    const normalizedEmail = email.toLowerCase().trim();
 
     try {
-        
-        const student = await User.findOne({ email: email.toLowerCase().trim(), role: 'student' });
-        if (!student) return res.status(404).json({ message: 'No registered student found with that email.' });
-
-        
-        let classroom = await Classroom.findOne({ teacher: req.user._id });
-        if (!classroom) {
-            classroom = await Classroom.create({ teacher: req.user._id, students: [] });
+        const student = await User.findOne({ email: normalizedEmail, role: 'student' });
+        if (!student) {
+            return res.status(404).json({
+                message: `No registered student account found for "${normalizedEmail}". Make sure they have signed up as a student.`,
+            });
         }
 
-        
-        if (classroom.students.includes(student._id)) {
-            return res.status(400).json({ message: 'Student already in your classroom.' });
+        // Atomic upsert — creates classroom if none exists for this teacher
+        let classroom = await Classroom.findOneAndUpdate(
+            { teacher: req.user._id },
+            { $setOnInsert: { teacher: req.user._id, students: [] } },
+            { upsert: true, new: true }
+        );
+
+        if (classroom.students.map(String).includes(String(student._id))) {
+            return res.status(400).json({ message: `${student.name} is already in your classroom.` });
         }
 
         classroom.students.push(student._id);
         await classroom.save();
 
-        
-        res.status(201).json({ _id: student._id, name: student.name, email: student.email, disabilityType: student.disabilityType });
+        res.status(201).json({
+            _id: student._id,
+            name: student.name,
+            email: student.email,
+            disabilityType: student.disabilityType,
+        });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

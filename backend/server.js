@@ -29,9 +29,13 @@ app.use('/api/lessons', require('./routes/lessonRoutes'));
 app.use('/api/quizzes', require('./routes/quizRoutes'));
 app.use('/api/submissions', require('./routes/submissionRoutes'));
 app.use('/api/teacher', require('./routes/teacherRoutes'));
+app.use('/api/lectures', require('./routes/lectureRoutes'));
 app.use('/api/ai', require('./routes/aiRoutes'));
 app.use('/api/progress', require('./routes/progressRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
+
+// Serve uploaded lecture videos
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
 app.use((err, req, res, next) => {

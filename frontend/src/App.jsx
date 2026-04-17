@@ -27,6 +27,7 @@ import TalkToAI from './pages/TalkToAI';
 import Home from './pages/Home';
 import ForgotPassword from './pages/ForgotPassword';
 import Api from './pages/Api';
+import Lectures from './pages/Lectures';
 
 
 const StudentOnlyRoute = () => {
@@ -120,6 +121,8 @@ function App() {
                 <Route path="/student-progress" element={<StudentProgress />} />
                 <Route path="/submission-review" element={<SubmissionReview />} />
                 <Route path="/manage-students" element={<ManageStudents />} />
+                {/* Lectures — accessible by both teachers and students */}
+                <Route path="/lectures" element={<Lectures />} />
 
                 <Route element={<StudentOnlyRoute />}>
                   <Route path="/home"       element={<Home />} />
