@@ -28,6 +28,7 @@ import Home from './pages/Home';
 import ForgotPassword from './pages/ForgotPassword';
 import Api from './pages/Api';
 import Lectures from './pages/Lectures';
+import GazeRemote from './components/GazeRemote';
 
 
 const StudentOnlyRoute = () => {
@@ -107,6 +108,7 @@ function App() {
               <EyeTrackingActivator />
               <HandTrackingActivator />
               <VoiceAssistantActivator />
+              <GazeRemote />
               <Routes>
                 <Route path="/" element={<Landing />} />
                 <Route path="/developers" element={<Api />} />

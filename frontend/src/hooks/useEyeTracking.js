@@ -390,6 +390,9 @@ export const useEyeTracking = (enabled) => {
     const rawY = ((irisY - 0.25) / 0.5) * window.innerHeight;
     const { x, y } = smoothGaze(rawX, Math.max(0, Math.min(window.innerHeight, rawY)));
 
+    // ── Publish smoothed gaze for GazeRemote panel ────────────────────────
+    window.__gazePos = { x, y };
+
     // ── Move gaze cursor ───────────────────────────────────────────────────
     let cursor = document.getElementById('gaze-cursor');
     if (!cursor) {
